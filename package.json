@@ -1,0 +1,16 @@
+{
+  "name": "korvkiosktycoon",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ruben",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "vite": "^7.0.0"
+  }
+}
