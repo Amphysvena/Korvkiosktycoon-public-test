@@ -12,5 +12,8 @@
   "description": "",
   "devDependencies": {
     "vite": "^7.0.0"
+  },
+  "dependencies": {
+    "break_infinity.js": "^2.2.0"
   }
 }
