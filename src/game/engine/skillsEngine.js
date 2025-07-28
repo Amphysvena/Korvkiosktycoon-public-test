@@ -1,0 +1,3 @@
+//pseudokod
+
+//Equip varmkorbröd första gången: Unlock skill throw (gör inget nu, det är första skillen men i första versionen av spelet så finns enbart detta så skapa enbart en skill som heter Throw)
