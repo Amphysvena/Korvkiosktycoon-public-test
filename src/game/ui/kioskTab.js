@@ -1,13 +1,36 @@
-export function renderKiosk(container) {
+/*export function renderKiosk(container) {
   const p = document.createElement('p');
-  p.textContent = "På gatan igen...";
-  container.appendChild(p);
+    container.appendChild(p);
 
   const btn = document.createElement('button');
   btn.textContent = "Gör korv";
   btn.onclick = () => alert("🌭 +1 Sausage!");
   container.appendChild(btn);
 }
+*/ //old code for Reference
+
+export function renderKioskTab() {
+  const kioskContainer = document.createElement('div');  //Creates a new container div for the Kiosk tab UI elements
+
+  // koktKorvknapp-ui
+  const sausageButton = document.createElement('button');
+  sausageButton.id = 'koktKorv-button';
+  sausageButton.innerHTML = `<img src="plugins/korvkiosktycoon/src/game/Assets/img/equipment/Korvknappar/korv1.png" alt="Korv" style="width: 64px; height: 64px;">`;
+
+  kioskContainer.appendChild(koktKorvButton);
+  document.body.appendChild(kioskContainer); 
+
+  // Hook up the button logic
+  koktKorvButton.addEventListener('click', () => {
+    handlekoktKorvClick();
+  });
+}
+
+
+
+
+
+
 
 //pseudocode
 

@@ -1,7 +1,9 @@
 import Decimal from 'break_infinity.js'; // imports the Decimal object from the break_infinity package. It can handle numbers bigger in magnitude than 1e308 
 
-let sausages = new Decimal(0); // Number of sausages
-
+export const state = {
+  korv: 0,
+  korvtak: 250
+};
 //pseudokod
 
 //track character boogie stats - i början finns endast 1 max HP

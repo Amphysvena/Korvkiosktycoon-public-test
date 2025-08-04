@@ -9,11 +9,20 @@
   },
   "author": "Ruben",
   "license": "ISC",
-  "description": "",
   "devDependencies": {
     "vite": "^7.0.0"
   },
   "dependencies": {
     "break_infinity.js": "^2.2.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Amphysvena/Korvkiosktycoon.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/Amphysvena/Korvkiosktycoon/issues"
+  },
+  "homepage": "https://github.com/Amphysvena/Korvkiosktycoon#readme",
+  "description": ""
 }

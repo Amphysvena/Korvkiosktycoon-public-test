@@ -5,3 +5,6 @@ export function startGame() {
   initUI();
 }
 
+import { renderKioskTab } from './ui/kioskTab.js';
+
+renderKioskTab();

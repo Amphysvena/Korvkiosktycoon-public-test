@@ -1,4 +1,4 @@
-export function renderResearch(container) {
+export function renderResearchTab(container) {
   container.innerHTML = `<p>Research new tech here.</p>`;
 }
 

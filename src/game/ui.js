@@ -1,9 +1,9 @@
-import { renderKiosk } from './ui/kiosk.js';
-import { renderResearch } from './ui/research.js';
+import { renderKioskTab } from './ui/kioskTab.js';
+import { renderResearchTab } from './ui/researchTab.js';
 
 const tabs = [
-  { id: 'kiosk', name: 'Kiosk', render: renderKiosk },
-  { id: 'research', name: 'Research', render: renderResearch },
+  { id: 'kiosk', name: 'Kiosk', render: renderKioskTab },
+  { id: 'research', name: 'Research', render: renderResearchTab },
   ];
 
 export function initUI() {
