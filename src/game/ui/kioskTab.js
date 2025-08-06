@@ -1,13 +1,16 @@
-export function renderKioskTab() {
-  const kioskContainer = document.createElement('div');  //Creates a new container div for the Kiosk tab UI elements
-
+export function renderKioskTab(container) {
+  const kioskContainer = document.createElement('div');  
+  kioskContainer.id = 'kiosk-container';
+  
   // koktKorvknapp-ui
-  const sausageButton = document.createElement('button');
-  sausageButton.id = 'koktKorvbutton';
-  sausageButton.innerHTML = `<img src="plugins/korvkiosktycoon/src/game/Assets/img/equipment/Korvknappar/korv1.png" alt="Korv" style="width: 64px; height: 64px;">`;
+  const koktKorvButton = document.createElement('button');
+  koktKorvButton.id = 'koktKorvbutton';
+  koktKorvButton.innerHTML = `
+  <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/equipment/Korvknappar/korv1.png" alt="Korv" style="width: 64px; height: 64px;">
+`;
 
   kioskContainer.appendChild(koktKorvButton);
-  document.body.appendChild(kioskContainer); 
+  container.appendChild(kioskContainer); 
 
   // Hook up the button logic
   koktKorvButton.addEventListener('click', () => {
