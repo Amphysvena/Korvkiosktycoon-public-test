@@ -1,6 +1,25 @@
-export function renderResearchTab(container) {
-  container.innerHTML = `<p>Research new tech here.</p>`;
+//import { isAutoFryUnlocked } from './ResearchEngine.js';
+//implement later
+
+//olderunlock code
+//import { isResearchTabUnlocked } from '../engine/researchEngine.js';
+
+export function renderResearchTab({ tabContent }) {
+  tabContent.innerHTML = '';
+
+  if (isAutoFryUnlocked()) {
+    // render Auto-Fry button
+  } else {
+    tabContent.innerHTML = '<p>No research available yet.</p>';
+  }
 }
+
+//older unlock code
+/*export function isUnlocked() {
+  // delegate to ResearchEngine
+  return isResearchTabUnlocked();
+}*/  
+
 
 //pseudokod
 

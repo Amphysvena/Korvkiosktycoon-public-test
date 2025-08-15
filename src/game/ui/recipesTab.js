@@ -1,3 +1,10 @@
+export function renderRecipesTab({ tabContent }) {
+  tabContent.innerHTML = '';
+  const recipesPlaceholder = document.createElement('p');
+  recipesPlaceholder.textContent = 'Recipes tab coming soon!';
+  tabContent.appendChild(recipesPlaceholder);
+}
+
 //pseudokod
 
 //Ärkekrat besegrad = 

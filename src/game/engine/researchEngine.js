@@ -1,3 +1,14 @@
+import { state } from '../state.js';
+
+//older unlock code
+/*export function isResearchTabUnlocked() {
+  return state.korv >= 10;
+}*/
+
+export function isAutoFryUnlocked() {
+  return state.korv >= 10; // example
+}
+
 // 1 När det finns 10 korv i lagret(state.js?) så blir Auto-Fry synlig och köpbar. En knapp som kan tryckas på. Kostar 10 korv. Ökar korv med +1 per 5 sek
 
 // 2 När det finns 100 korv i lagret så blir Korvlådan Plastlåda synlig och köpbar. Kostar 100 korv. Ger spelaren Equipment Plastlåda och ökar korvlager max till 1000

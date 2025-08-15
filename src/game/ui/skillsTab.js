@@ -1,3 +1,10 @@
+export function renderSkillsTab({ tabContent }) {
+  tabContent.innerHTML = '';
+  const skillsPlaceholder = document.createElement('p');
+  skillsPlaceholder.textContent = 'Skills tab coming soon!';
+  tabContent.appendChild(skillsPlaceholder);
+}
+
 //pseudokod
 
 //Equip varmkorbröd första gången: Unlock skill throw 

@@ -1,3 +1,11 @@
+export function renderBoogieTab({ tabContent }) {
+  tabContent.innerHTML = '';
+  const boogiePlaceholder = document.createElement('p');
+  boogiePlaceholder.textContent = 'Boogie tab coming soon!';
+  tabContent.appendChild(boogiePlaceholder);
+}
+
+
 //pseudokod
 
 //Equip varmkorbröd första gången:Boogie tab unlock

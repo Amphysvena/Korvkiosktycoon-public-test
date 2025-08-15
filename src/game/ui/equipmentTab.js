@@ -1,3 +1,10 @@
+export function renderEquipmentTab({ tabContent }) {
+  tabContent.innerHTML = '';
+  const equipmentPlaceholder = document.createElement('p');
+  equipmentPlaceholder.textContent = 'Equipment tab coming soon!';
+  tabContent.appendChild(equipmentPlaceholder);
+}
+
 //Pseudokod
 
 //Equip interface har slots: 

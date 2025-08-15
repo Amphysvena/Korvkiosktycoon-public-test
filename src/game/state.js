@@ -9,10 +9,6 @@ export const state = {
 //track character boogie stats - i början finns endast 1 max HP
 //uppdateras från equipment slots i equipment.js
 
-//track korv i lager konstant
-
-//korvlager tak vid start = 250
-
 //korv i lager (100 >=) {Plastlåda blir köpbar i research} 
 
 //korv i lager (750 >=) {Fisklåda blir köpbar i research} 

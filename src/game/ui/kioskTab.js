@@ -1,22 +1,37 @@
-export function renderKioskTab(container) {
+import { handlekoktKorvClick } from '../engine/kioskEngine.js';
+
+// ui.js calls this as renderKioskTab({ tabContent, mainScreen })
+export function renderKioskTab({ tabContent }) {
+  // Clear old kiosk container if it exists (prevents duplicates)
+  const existing = document.getElementById('kiosk-container');
+  if (existing) {
+    existing.remove(); // 🔹 Safely remove any leftover kiosk container
+  }
+
+  // Create kiosk container
   const kioskContainer = document.createElement('div');  
   kioskContainer.id = 'kiosk-container';
-  
-  // koktKorvknapp-ui
+
+  // Create the korv button
   const koktKorvButton = document.createElement('button');
   koktKorvButton.id = 'koktKorvbutton';
   koktKorvButton.innerHTML = `
-  <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/equipment/Korvknappar/korv1.png" alt="Korv" style="width: 64px; height: 64px;">
-`;
-
-  kioskContainer.appendChild(koktKorvButton);
-  container.appendChild(kioskContainer); 
+    <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/equipment/Korvknappar/korv1.png" 
+         alt="Korv" style="width: 64px; height: 64px;">
+  `;
 
   // Hook up the button logic
-  koktKorvButton.addEventListener('click', () => {
-    handlekoktKorvClick();
-  });
+  koktKorvButton.addEventListener('click', handlekoktKorvClick);
+
+  // Add button to kiosk container
+  kioskContainer.appendChild(koktKorvButton);
+
+  // 🔹 Only append kiosk container to the provided tabContent, never mainScreen
+  tabContent.appendChild(kioskContainer);
 }
+
+
+
 
 
 
