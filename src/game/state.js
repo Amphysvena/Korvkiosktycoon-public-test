@@ -2,8 +2,20 @@ import Decimal from 'break_infinity.js'; // imports the Decimal object from the 
 
 export const state = {
   korv: 0,
-  korvtak: 250
+  korvtak: 250,
+
+  research: {
+    autoFry: {
+      unlocked: false,
+      researching: false,
+      remainingTime: 30, // seconds
+      completed: false
+    },
+  },
+
+  autoFryActive: false, // toggleable after research is done
 };
+
 //pseudokod
 
 //track character boogie stats - i början finns endast 1 max HP

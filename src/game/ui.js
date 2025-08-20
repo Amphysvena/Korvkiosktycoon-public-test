@@ -1,3 +1,5 @@
+import { state } from './state.js';
+
 import { renderKioskTab } from './ui/kioskTab.js';
 //import { renderResearchTab, isUnlocked as isResearchTabUnlocked } from './ui/researchTab.js';
 import { renderResearchTab } from './ui/researchTab.js';
@@ -12,18 +14,18 @@ import { renderSpacecenterTab } from './ui/spacecenterTab.js'
 import { renderSettingsTab } from './ui/settingsTab.js';
 
 const tabs = [
-  { id: 'kiosk', name: 'Kiosk', render: renderKioskTab, unlocked: true },
+  { id: 'kiosk', name: 'Kiosk', render: renderKioskTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/kiosk frame 0.png`},
   //{ id: 'research', name: 'Research', render: renderResearchTab, unlocked: isResearchTabUnlocked() },
-  {id: 'research', name: 'Research', render: renderResearchTab, unlocked: true },
-  {id: 'equipment', name: 'Equipment', render: renderEquipmentTab, unlocked: true},
-  {id: 'boogie',     name: 'Boogie',     render: renderBoogieTab,    unlocked: true },
-  {id: 'skills',     name: 'Skills',     render: renderSkillsTab,    unlocked: true },
-  {id: 'recipes',    name: 'Recipes',    render: renderRecipesTab,   unlocked: true },
-  {id: 'buildings',  name: 'Buildings',  render: renderBuildingsTab, unlocked: true },
-  {id: 'factory',    name: 'Factory',    render: renderFactoryTab,   unlocked: true },
-  {id: 'artifacts',  name: 'Artifacts',  render: renderArtifactsTab, unlocked: true },
-  {id: 'spacecenter',  name: 'Spacecenter',  render: renderSpacecenterTab, unlocked: true },
-  {id: 'settings',   name: 'Settings',   render: renderSettingsTab,  unlocked: true }
+  {id: 'research', name: 'Research', render: renderResearchTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/research/beaker-frame-0.png`},
+  {id: 'equipment', name: 'Equipment', render: renderEquipmentTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/equipment/equipment frame 0.png`},
+  {id: 'boogie',     name: 'Boogie',     render: renderBoogieTab,    unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duel frame 0.png` },
+  {id: 'skills',     name: 'Skills',     render: renderSkillsTab,    unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/Skills/Skill 1 - Throw.png` },
+  {id: 'recipes',    name: 'Recipes',    render: renderRecipesTab,   unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/recept/recipe-frame-0-.png` },
+  {id: 'buildings',  name: 'Buildings',  render: renderBuildingsTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/building/building upgrade frame 0.png` },
+  {id: 'factory',    name: 'Factory',    render: renderFactoryTab,   unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/fabrik/fabrik frame 0.png` },
+  {id: 'artifacts',  name: 'Artifacts',  render: renderArtifactsTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/artifacts/artifacts frame 0.png` },
+  {id: 'spacecenter',  name: 'Spacecenter',  render: renderSpacecenterTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/spacecenter/spacecenter frame 0.png` },
+  {id: 'settings',   name: 'Settings',   render: renderSettingsTab,  unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/inställningar/settings frame 0.png` }
 
 ];
 
@@ -96,46 +98,58 @@ export function initUI() {
 
   // Build tab buttons
   tabs
-    .filter(tab => tab.unlocked) // Only show unlocked
-    .forEach(tab => {
-      const btn = document.createElement('button');
-      btn.textContent = tab.name;
-      btn.onclick = () => switchTab(tab.id);
-      btn.id = `btn-${tab.id}`;
-      btn.style.padding = '5px 10px';
-      btn.style.fontSize = '16px';
-      btn.style.cursor = 'pointer';
-      tabButtons.appendChild(btn);
-    });
+  .filter(tab => tab.unlocked) // Only show unlocked
+  .forEach(tab => {
+    const btn = document.createElement('button');
+    btn.id = `btn-${tab.id}`;
+    btn.style.padding = '5px 10px';
+    btn.style.fontSize = '16px';
+    btn.style.cursor = 'pointer';
 
-  function switchTab(tabId) {
-    const tab = tabs.find(t => t.id === tabId);
-    if (tab) {
-      tabContent.innerHTML = '';
-      mainScreen.innerHTML = '';
-      tab.render({ tabContent, mainScreen });
+    // 🔹 Use innerHTML for image and text
+    btn.innerHTML = `
+      <img src="${tab.icon}" alt="${tab.name}"
+           style="width:32px; height:32px; vertical-align:middle; margin-right:5px;">
+      ${tab.name}
+    `;
+
+    btn.onclick = () => switchTab(tab.id);
+    tabButtons.appendChild(btn);
+  });
+
+function switchTab(tabId) {
+  const tab = tabs.find(t => t.id === tabId);
+  if (tab) {
+    tabContent.innerHTML = '';
+    mainScreen.innerHTML = '';
+    tab.render({ tabContent, mainScreen });
+  }
+  highlightTab(tabId);
+}
+
+function highlightTab(activeId) {
+  tabs.forEach(tab => {
+    const btn = document.getElementById(`btn-${tab.id}`);
+    if (btn) {
+      btn.classList.toggle('active', tab.id === activeId);
     }
-    highlightTab(tabId);
-  }
-
-  function highlightTab(activeId) {
-    tabs.forEach(tab => {
-      const btn = document.getElementById(`btn-${tab.id}`);
-      if (btn) {
-        btn.classList.toggle('active', tab.id === activeId);
-      }
-    });
-  }
+  });
+}
 
   // Start with the first tab
   switchTab(tabs[0].id);
 }
 
+// ─── Auto-update korv counter every second ───
+  setInterval(() => {
+    updateKorvCounter(state.korv);
+  }, 1000);
+
 function updateTabs() {
   tabs.forEach(tab => {
-    if (tab.id === 'research') {
-      tab.unlocked = isResearchTabUnlocked();
-    }
+    //if (tab.id === 'research') {
+    //  tab.unlocked = isResearchTabUnlocked();
+    //}
   });
 
   // Clear old buttons
@@ -162,5 +176,4 @@ export function updateKorvCounter(amount) {
   if (korvCounterEl) {
     korvCounterEl.textContent = `Korv: ${amount}`;
   }
-  updateTabs();
 }

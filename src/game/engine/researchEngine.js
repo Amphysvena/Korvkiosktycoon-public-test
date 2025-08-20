@@ -1,13 +1,74 @@
-import { state } from '../state.js';
-
 //older unlock code
 /*export function isResearchTabUnlocked() {
   return state.korv >= 10;
 }*/
+import { state } from '../state.js';
 
-export function isAutoFryUnlocked() {
-  return state.korv >= 10; // example
+// Check if Auto-Fry should unlock
+export function checkAutoFryUnlock() {
+  const autoFry = state.research.autoFry;
+  if (!autoFry.unlocked && state.korv >= 10) {
+    autoFry.unlocked = true;
+    console.log("Auto-Fry unlocked!");
+  }
 }
+
+// Internal: starts the countdown for a research item
+function startResearchCountdown(researchItem) {
+  const interval = setInterval(() => {
+    researchItem.remainingTime--;
+
+    if (researchItem.remainingTime <= 0) {
+      clearInterval(interval);
+      researchItem.remainingTime = 0;
+      researchItem.researching = false;
+      researchItem.completed = true;
+      console.log("Auto-Fry research complete!");
+    }
+  }, 1000);
+}
+
+// Start Auto-Fry research from scratch
+export function startAutoFryResearch() {
+  const autoFry = state.research.autoFry;
+
+  if (!autoFry.researching && !autoFry.completed) {
+    if (state.korv < 10) {
+      console.log("Not enough korv to start Auto-Fry research!");
+      return;
+    }
+
+    state.korv -= 10;
+    autoFry.researching = true;
+    autoFry.remainingTime = 30;
+
+    console.log("Auto-Fry research started! 10 korv deducted.");
+
+    startResearchCountdown(autoFry);
+  }
+}
+
+// Resume any active research timers (used after loading save)
+export function resumeActiveResearch() {
+  const autoFry = state.research.autoFry;
+  if (autoFry.researching && !autoFry.completed) {
+    startResearchCountdown(autoFry);
+    console.log("Resuming Auto-Fry research timer...");
+  }
+}
+
+// Add korv automatically if Auto-Fry is active and research completed
+setInterval(() => {
+  if (state.autoFryActive && state.research.autoFry.completed) {
+    state.korv += 1;
+
+    // Optional: clamp to max korv
+    if (state.korv > state.korvtak) state.korv = state.korvtak;
+  }
+}, 5000);
+
+
+
 
 // 1 När det finns 10 korv i lagret(state.js?) så blir Auto-Fry synlig och köpbar. En knapp som kan tryckas på. Kostar 10 korv. Ökar korv med +1 per 5 sek
 

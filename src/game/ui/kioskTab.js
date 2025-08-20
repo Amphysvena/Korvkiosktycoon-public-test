@@ -14,6 +14,7 @@ export function renderKioskTab({ tabContent }) {
 
   // Create the korv button
   const koktKorvButton = document.createElement('button');
+  koktKorvButton.type = 'button';
   koktKorvButton.id = 'koktKorvbutton';
   koktKorvButton.innerHTML = `
     <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/equipment/Korvknappar/korv1.png" 
