@@ -34,6 +34,14 @@ let korvCounterEl;
 let tabButtons;  // moved outside initUI so updateTabs can access
 
 export function initUI() {
+  // Center the game container
+  document.body.style.display = 'flex';
+  document.body.style.justifyContent = 'center'; // horizontal
+  document.body.style.alignItems = 'center';     // vertical
+  document.body.style.height = '100vh';          // full viewport height
+  document.body.style.margin = '0';              // remove default browser margin
+  document.body.style.background = '#eee';       // optional background
+
   // Main container: 600x1200
   const container = document.createElement('div');
   container.id = 'game-ui';
