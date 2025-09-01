@@ -1,5 +1,5 @@
 import { state } from '../state.js';
-import { checkAutoFryUnlock, startAutoFryResearch } from '../engine/researchEngine.js';
+import { researchUnlock, startAutoFryResearch } from '../engine/researchEngine.js';
 
 export function renderResearchTab({ tabContent }) {
   tabContent.innerHTML = '';
@@ -7,11 +7,11 @@ export function renderResearchTab({ tabContent }) {
   const autoFry = state.research.autoFry;
 
   // Check if it should unlock this render
-  checkAutoFryUnlock();
+  researchUnlock();
 
-  if (!autoFry.unlocked) return; // invisible until unlocked
+  if (!state.research.autoFry.unlocked) return; // invisible until unlocked
 
-  // Create button
+  // Create button for autofry
   const button = document.createElement('button');
   button.style.width = '64px';
   button.style.height = '64px';
@@ -20,7 +20,7 @@ export function renderResearchTab({ tabContent }) {
   button.style.padding = '0';
   button.style.cursor = 'pointer';
 
-  // Add the PNG as an <img> for reliable display
+  // Add the PNG as an <img> for reliable display of autofry
   const buttonImg = document.createElement('img');
   buttonImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/research/Research1-Autofry.png`;
   buttonImg.style.width = '64px';
@@ -29,7 +29,7 @@ export function renderResearchTab({ tabContent }) {
   buttonImg.style.opacity = autoFry.completed ? '1' : '0.5';
   button.appendChild(buttonImg);
 
-  // Timer / status text under button
+  // Timer / status text under autofry button 
   const timerText = document.createElement('div');
   timerText.style.position = 'absolute';
   timerText.style.bottom = '-20px';
@@ -70,13 +70,11 @@ export function renderResearchTab({ tabContent }) {
   updateButton();
 }
 
-
-
-
 /*export function isUnlocked() {
   // delegate to ResearchEngine
   return isResearchTabUnlocked();
 }*/  
+
 
 
 //pseudokod

@@ -4,7 +4,31 @@
 }*/
 import { state } from '../state.js';
 
-// Check if Auto-Fry should unlock
+//Researchdata defining unlock requirements
+const researchData = {
+  autoFry: {
+  name: "autoFry",
+  criteria: (state) => state.korv >= 10
+  }
+};
+
+
+//checks if researches are unlocked by referencing the variable key with the resarchData const data.
+export function researchUnlock() {
+  for (const key in researchData) {
+    const research = researchData[key];
+    const researchState = state.research[key]; // checks state if it is unlocked already
+
+    if (!researchState.unlocked && research.criteria(state)) {
+      researchState.unlocked = true;
+      console.log(`${research.name} unlocked!`);
+    }
+  }
+}
+
+/* refactored code 
+ 
+Check if Auto-Fry should unlock  
 export function checkAutoFryUnlock() {
   const autoFry = state.research.autoFry;
   if (!autoFry.unlocked && state.korv >= 10) {
@@ -12,6 +36,9 @@ export function checkAutoFryUnlock() {
     console.log("Auto-Fry unlocked!");
   }
 }
+  */  
+
+
 
 // Internal: starts the countdown for a research item
 function startResearchCountdown(researchItem) {
