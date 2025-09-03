@@ -1,5 +1,6 @@
 import { state } from '../state.js';
-import { researchUnlock, startAutoFryResearch } from '../engine/researchEngine.js';
+import { researchUnlock, startResearch } from '../engine/researchEngine.js';
+import { researchData } from '../data/researchData.js';
 
 export function renderResearchTab({ tabContent }) {
   tabContent.innerHTML = '';
@@ -46,22 +47,22 @@ export function renderResearchTab({ tabContent }) {
     } else if (!autoFry.completed) {
       button.disabled = false;
       buttonImg.style.opacity = '0.5';
-      timerText.textContent = '30s';
+      timerText.textContent = `${researchData.autoFry.duration}s`;
     } else {
       button.disabled = false;
       buttonImg.style.opacity = state.autoFryActive ? '1' : '0.5';
       timerText.textContent = state.autoFryActive ? 'ON' : 'OFF';
     }
   }
-
+//starts research autofry research when clicked. 
   button.addEventListener('click', () => {
-    if (!autoFry.researching && !autoFry.completed) {
-      startAutoFryResearch();
-    } else if (autoFry.completed) {
-      state.autoFryActive = !state.autoFryActive; // toggle
-    }
-    updateButton();
-  });
+  if (!autoFry.researching && !autoFry.completed) {
+    startResearch("autoFry"); 
+  } else if (autoFry.completed) {
+    state.autoFryActive = !state.autoFryActive; // toggle
+  }
+  updateButton();
+});
 
   tabContent.appendChild(button);
 

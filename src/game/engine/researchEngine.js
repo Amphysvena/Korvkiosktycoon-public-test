@@ -3,21 +3,13 @@
   return state.korv >= 10;
 }*/
 import { state } from '../state.js';
+import { researchData } from '../data/researchData.js';
 
-//Researchdata defining unlock requirements
-const researchData = {
-  autoFry: {
-  name: "autoFry",
-  criteria: (state) => state.korv >= 10
-  }
-};
-
-
-//checks if researches are unlocked by referencing the variable key with the resarchData const data.
+// Check if researches should unlock based on criteria
 export function researchUnlock() {
   for (const key in researchData) {
     const research = researchData[key];
-    const researchState = state.research[key]; // checks state if it is unlocked already
+    const researchState = state.research[key];
 
     if (!researchState.unlocked && research.criteria(state)) {
       researchState.unlocked = true;
@@ -26,73 +18,74 @@ export function researchUnlock() {
   }
 }
 
-/* refactored code 
- 
-Check if Auto-Fry should unlock  
-export function checkAutoFryUnlock() {
-  const autoFry = state.research.autoFry;
-  if (!autoFry.unlocked && state.korv >= 10) {
-    autoFry.unlocked = true;
-    console.log("Auto-Fry unlocked!");
-  }
-}
-  */  
+// Internal: countdown timer for a specific research
+function startResearchCountdown(key) {
+  const researchState = state.research[key];
+  const researchDef = researchData[key];
 
-
-
-// Internal: starts the countdown for a research item
-function startResearchCountdown(researchItem) {
   const interval = setInterval(() => {
-    researchItem.remainingTime--;
+    researchState.remainingTime--;
 
-    if (researchItem.remainingTime <= 0) {
+    if (researchState.remainingTime <= 0) {
       clearInterval(interval);
-      researchItem.remainingTime = 0;
-      researchItem.researching = false;
-      researchItem.completed = true;
-      console.log("Auto-Fry research complete!");
+      researchState.remainingTime = 0;
+      researchState.researching = false;
+      researchState.completed = true;
+
+      console.log(`${researchDef.name} research complete!`);
+
+      // Run one-time effect (if defined)
+      if (typeof researchDef.effect === "function") {
+        researchDef.effect(state);
+      }
     }
   }, 1000);
 }
 
-// Start Auto-Fry research from scratch
-export function startAutoFryResearch() {
-  const autoFry = state.research.autoFry;
+// Start a research by key (e.g. "autoFry", "plasticBox")
+export function startResearch(key) {
+  const researchState = state.research[key];
+  const researchDef = researchData[key];
 
-  if (!autoFry.researching && !autoFry.completed) {
-    if (state.korv < 10) {
-      console.log("Not enough korv to start Auto-Fry research!");
+  if (!researchState.researching && !researchState.completed) {
+    if (state.korv < researchDef.cost) {
+      console.log(`Not enough korv to start ${researchDef.name} research!`);
       return;
     }
 
-    state.korv -= 10;
-    autoFry.researching = true;
-    autoFry.remainingTime = 30;
+    state.korv -= researchDef.cost;
+    researchState.researching = true;
+    researchState.remainingTime = researchDef.duration;
 
-    console.log("Auto-Fry research started! 10 korv deducted.");
+    console.log(`${researchDef.name} research started! ${researchDef.cost} korv deducted.`);
 
-    startResearchCountdown(autoFry);
+    startResearchCountdown(key);
   }
 }
 
 // Resume any active research timers (used after loading save)
 export function resumeActiveResearch() {
-  const autoFry = state.research.autoFry;
-  if (autoFry.researching && !autoFry.completed) {
-    startResearchCountdown(autoFry);
-    console.log("Resuming Auto-Fry research timer...");
+  for (const key in state.research) {
+    const researchState = state.research[key];
+    if (researchState.researching && !researchState.completed) {
+      startResearchCountdown(key);
+      console.log(`Resuming ${researchData[key].name} research timer...`);
+    }
   }
 }
 
-// Add korv automatically if Auto-Fry is active and research completed
-setInterval(() => {
-  if (state.autoFryActive && state.research.autoFry.completed) {
-    state.korv += 1;
+// Setup passive effects for researches with effectInterval
+for (const key in researchData) {
+  const researchDef = researchData[key];
 
-    // Optional: clamp to max korv
-    if (state.korv > state.korvtak) state.korv = state.korvtak;
+  if (researchDef.effect && researchDef.effectInterval) {
+    setInterval(() => {
+      if (state.research[key].completed) {
+        researchDef.effect(state);
+      }
+    }, researchDef.effectInterval);
   }
-}, 5000);
+}
 
 
 
