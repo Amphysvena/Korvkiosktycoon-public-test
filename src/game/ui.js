@@ -179,9 +179,8 @@ function updateTabs() {
   });
 }
 
-// Call this from engine to update korv counter and tabs
-export function updateKorvCounter(amount) {
+export function updateKorvCounter() {
   if (korvCounterEl) {
-    korvCounterEl.textContent = `Korv: ${amount}`;
+    korvCounterEl.textContent = `Korv: ${state.korv} / ${state.korvtak}`;
   }
 }

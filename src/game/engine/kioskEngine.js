@@ -21,3 +21,9 @@ export function handlekoktKorvClick() {
     console.log("Korvtak reached! No more korv can be added.");
   }
 }
+
+//cheatkorvbutton logic for testing. 
+export function handleCheatKorvClick() {
+  state.korv += 1000;
+  if (state.korv > state.korvtak) state.korv = state.korvtak;
+}

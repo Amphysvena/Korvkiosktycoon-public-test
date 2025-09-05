@@ -5,76 +5,84 @@ import { researchData } from '../data/researchData.js';
 export function renderResearchTab({ tabContent }) {
   tabContent.innerHTML = '';
 
-  const autoFry = state.research.autoFry;
-
-  // Check if it should unlock this render
+  // Check unlocks
   researchUnlock();
 
-  if (!state.research.autoFry.unlocked) return; // invisible until unlocked
+  // Helper to create a button for any research
+  function createResearchButton(key) {
+    const researchState = state.research[key];
+    const researchDef = researchData[key];
 
-  // Create button for autofry
-  const button = document.createElement('button');
-  button.style.width = '64px';
-  button.style.height = '64px';
-  button.style.position = 'relative';
-  button.style.border = 'none';
-  button.style.padding = '0';
-  button.style.cursor = 'pointer';
+    if (!researchState.unlocked) return null; // skip if not unlocked yet
 
-  // Add the PNG as an <img> for reliable display of autofry
-  const buttonImg = document.createElement('img');
-  buttonImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/research/Research1-Autofry.png`;
-  buttonImg.style.width = '64px';
-  buttonImg.style.height = '64px';
-  buttonImg.style.display = 'block';
-  buttonImg.style.opacity = autoFry.completed ? '1' : '0.5';
-  button.appendChild(buttonImg);
+    const button = document.createElement('button');
+    button.style.width = '64px';
+    button.style.height = '64px';
+    button.style.position = 'relative';
+    button.style.border = 'none';
+    button.style.padding = '0';
+    button.style.cursor = 'pointer';
 
-  // Timer / status text under autofry button 
-  const timerText = document.createElement('div');
-  timerText.style.position = 'absolute';
-  timerText.style.bottom = '-20px';
-  timerText.style.width = '100%';
-  timerText.style.textAlign = 'center';
-  timerText.style.fontSize = '14px';
-  button.appendChild(timerText);
+    const buttonImg = document.createElement('img');
+    buttonImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/research/${researchDef.img}`;
+    buttonImg.style.width = '64px';
+    buttonImg.style.height = '64px';
+    buttonImg.style.display = 'block';
+    button.appendChild(buttonImg);
 
-  function updateButton() {
-    if (autoFry.researching) {
-      button.disabled = true;
-      buttonImg.style.opacity = '0.5';
-      timerText.textContent = `${autoFry.remainingTime}s`;
-    } else if (!autoFry.completed) {
-      button.disabled = false;
-      buttonImg.style.opacity = '0.5';
-      timerText.textContent = `${researchData.autoFry.duration}s`;
-    } else {
-      button.disabled = false;
-      buttonImg.style.opacity = state.autoFryActive ? '1' : '0.5';
-      timerText.textContent = state.autoFryActive ? 'ON' : 'OFF';
+    const timerText = document.createElement('div');
+    timerText.style.position = 'absolute';
+    timerText.style.bottom = '-20px';
+    timerText.style.width = '100%';
+    timerText.style.textAlign = 'center';
+    timerText.style.fontSize = '14px';
+    button.appendChild(timerText);
+
+    function updateButton() {
+      if (researchState.researching) {
+        button.disabled = true;
+        buttonImg.style.opacity = '0.5';
+        timerText.textContent = `${researchState.remainingTime}s`;
+      } else if (!researchState.completed) {
+        button.disabled = false;
+        buttonImg.style.opacity = '0.5';
+        timerText.textContent = `${researchDef.duration}s`;
+      } else {
+        // Handle toggleable researches differently
+        const toggleable = researchDef.toggleable;
+        button.disabled = false;
+        if (toggleable) {
+          buttonImg.style.opacity = state[toggleable] ? '1' : '0.5';
+          timerText.textContent = state[toggleable] ? 'ON' : 'OFF';
+        } else {
+          // Non-toggleable: greyed out or permanent effect
+          buttonImg.style.opacity = '0.5';
+          timerText.textContent = '✓';
+        }
+      }
     }
-  }
-//starts research autofry research when clicked. 
-  button.addEventListener('click', () => {
-  if (!autoFry.researching && !autoFry.completed) {
-    startResearch("autoFry"); 
-  } else if (autoFry.completed) {
-    state.autoFryActive = !state.autoFryActive; // toggle
-  }
-  updateButton();
-});
 
-  tabContent.appendChild(button);
+    button.addEventListener('click', () => {
+      if (!researchState.researching && !researchState.completed) {
+        startResearch(key);
+      } else if (researchState.completed && researchDef.toggleable) {
+        state[researchDef.toggleable] = !state[researchDef.toggleable];
+      }
+      updateButton();
+    });
 
-  // Refresh every second for countdown and opacity
-  setInterval(updateButton, 1000);
-  updateButton();
+    setInterval(updateButton, 1000);
+    updateButton();
+
+    return button;
+  }
+
+  // Loop through all researches in researchData
+  for (const key in researchData) {
+    const btn = createResearchButton(key);
+    if (btn) tabContent.appendChild(btn);
+  }
 }
-
-/*export function isUnlocked() {
-  // delegate to ResearchEngine
-  return isResearchTabUnlocked();
-}*/  
 
 
 

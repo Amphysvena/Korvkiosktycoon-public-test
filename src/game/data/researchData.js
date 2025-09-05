@@ -2,6 +2,7 @@
 export const researchData = {
   autoFry: {
   name: "autoFry",
+  img: "Research1-Autofry.png",
   cost: 10,
   duration: 30,
   effect: (state) => {
@@ -9,16 +10,26 @@ export const researchData = {
     if (state.korv > state.korvtak) state.korv = state.korvtak;
   },
     effectInterval: 5000,      // passive effect interval (korv gain)
-  criteria: (state) => state.korv >= 10
+  criteria: (state) => state.korv >= 10,
+  toggleable: 'autoFryActive'
   },
 
   plasticBox : {
   name: "plastlåda",
-  criteria: (state) => state.korv >= 100  
+  img: "Research2-plastlada varmkorv.png",
+  cost: 100,
+  duration: 60,
+  criteria: (state) => state.korv >= 100, 
+  effect: (state) => {
+    state.korvtak += 900;
+    state.equipment.plasticBox.unlocked = true; // make sure this exists
+  }
   },
 
   fishBox : {
   name: "fisklåda",
+  cost: 750,
+  duration: 300,
   criteria: (state) => state.korv >= 750
   },
 

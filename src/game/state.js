@@ -4,7 +4,12 @@ import { researchData } from './data/researchData.js'
 export const state = {
   korv: 0,
   korvtak: 250,
-  research: {},
+  research: {
+    autoFry: { unlocked: false, researching: false, remainingTime: 0, completed: false }
+  },
+  equipment: {
+    plasticBox: { unlocked: false, equipped: false }
+  }, 
   autoFryActive: false, // toggleable after research is done
 };
 

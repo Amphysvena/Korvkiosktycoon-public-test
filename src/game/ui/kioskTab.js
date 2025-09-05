@@ -1,4 +1,5 @@
 import { handlekoktKorvClick } from '../engine/kioskEngine.js';
+import { handleCheatKorvClick } from  '../engine/kioskEngine.js';
 
 // ui.js calls this as renderKioskTab({ tabContent, mainScreen })
 export function renderKioskTab({ tabContent }) {
@@ -29,6 +30,38 @@ export function renderKioskTab({ tabContent }) {
 
   // 🔹 Only append kiosk container to the provided tabContent, never mainScreen
   tabContent.appendChild(kioskContainer);
+
+  //cheat button for testing
+const koktKorvCheatButton = document.createElement('button');
+koktKorvCheatButton.type = 'button';
+koktKorvCheatButton.id = 'koktKorvCheatButton';
+koktKorvCheatButton.style.width = '64px';
+koktKorvCheatButton.style.height = '64px';
+koktKorvCheatButton.style.position = 'relative';
+koktKorvCheatButton.style.border = 'none';
+koktKorvCheatButton.style.padding = '0';
+koktKorvCheatButton.style.cursor = 'pointer';
+
+// Add the same image as the original button
+const buttonImg = document.createElement('img');
+buttonImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/equipment/Korvknappar/korv1.png`;
+buttonImg.style.width = '64px';
+buttonImg.style.height = '64px';
+buttonImg.style.display = 'block';
+koktKorvCheatButton.appendChild(buttonImg);
+
+// Add the +1000 text under the image
+const textDiv = document.createElement('div');
+textDiv.textContent = '+1000';
+textDiv.style.textAlign = 'center';
+textDiv.style.fontSize = '14px';
+koktKorvCheatButton.appendChild(textDiv);
+
+// Hook up the click event to your cheat function
+koktKorvCheatButton.addEventListener('click', handleCheatKorvClick);
+
+// Append to the container
+kioskContainer.appendChild(koktKorvCheatButton);
 }
 
 
