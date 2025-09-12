@@ -37,7 +37,7 @@ koktKorvCheatButton.type = 'button';
 koktKorvCheatButton.id = 'koktKorvCheatButton';
 koktKorvCheatButton.style.width = '64px';
 koktKorvCheatButton.style.height = '64px';
-koktKorvCheatButton.style.position = 'relative';
+koktKorvCheatButton.style.position = 'center';
 koktKorvCheatButton.style.border = 'none';
 koktKorvCheatButton.style.padding = '0';
 koktKorvCheatButton.style.cursor = 'pointer';
@@ -54,7 +54,7 @@ koktKorvCheatButton.appendChild(buttonImg);
 const textDiv = document.createElement('div');
 textDiv.textContent = '+1000';
 textDiv.style.textAlign = 'center';
-textDiv.style.fontSize = '14px';
+textDiv.style.fontSize = '10px';
 koktKorvCheatButton.appendChild(textDiv);
 
 // Hook up the click event to your cheat function
@@ -62,7 +62,7 @@ koktKorvCheatButton.addEventListener('click', handleCheatKorvClick);
 
 // Append to the container
 kioskContainer.appendChild(koktKorvCheatButton);
-}
+} //cheat button code end
 
 
 

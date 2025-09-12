@@ -1,6 +1,7 @@
 import { state } from '../state.js';
 import { researchUnlock, startResearch } from '../engine/researchEngine.js';
 import { researchData } from '../data/researchData.js';
+import { finishAllResearchTimers } from '../engine/researchEngine.js'; // cheat code 
 
 export function renderResearchTab({ tabContent }) {
   tabContent.innerHTML = '';
@@ -82,8 +83,20 @@ export function renderResearchTab({ tabContent }) {
     const btn = createResearchButton(key);
     if (btn) tabContent.appendChild(btn);
   }
-}
+  // Cheat button for instantly finishing all research
+const finishResearchButton = document.createElement('button');
+finishResearchButton.type = 'button';
+finishResearchButton.id = 'finishResearchButton';
+finishResearchButton.textContent = 'Finish Research';
+finishResearchButton.style.width = '120px';
+finishResearchButton.style.height = '40px';
+finishResearchButton.style.marginLeft = '10px';
 
+finishResearchButton.addEventListener('click', finishAllResearchTimers);
+
+tabContent.appendChild(finishResearchButton);
+// end of cheat button code
+}
 
 
 //pseudokod

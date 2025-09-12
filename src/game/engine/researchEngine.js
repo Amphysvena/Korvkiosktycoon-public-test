@@ -34,9 +34,9 @@ function startResearchCountdown(key) {
 
       console.log(`${researchDef.name} research complete!`);
 
-      // Run one-time effect (if defined)
-      if (typeof researchDef.effect === "function") {
-        researchDef.effect(state);
+      // Only run completion effect automatically if NOT toggleable
+      if (!researchDef.toggleable && typeof researchDef.effect === "function") {
+      researchDef.effect(state);
       }
     }
   }, 1000);
@@ -80,13 +80,29 @@ for (const key in researchData) {
 
   if (researchDef.effect && researchDef.effectInterval) {
     setInterval(() => {
-      if (state.research[key].completed) {
-        researchDef.effect(state);
-      }
+      const rs = state.research[key];
+      if (!rs.completed) return;
+
+      // If research is toggleable, only run effect if toggle is ON
+      if (researchDef.toggleable && !state[researchDef.toggleable]) return;
+
+      researchDef.effect(state);
     }, researchDef.effectInterval);
   }
 }
 
+
+//cheat code to finish all researchtimers
+export function finishAllResearchTimers() {
+  console.log("Cheat: setting all active research timers to 1 second left");
+  for (const key in state.research) {
+    const rs = state.research[key];
+    if (rs.researching && !rs.completed) {
+      rs.remainingTime = 1; // let the normal countdown finish it next tick
+      console.log(`${key} set to 1 second remaining`);
+    }
+  }
+} //end cheat code
 
 
 // 2 När det finns 100 korv i lagret så blir Korvlådan Plastlåda synlig och köpbar. Kostar 100 korv. Ger spelaren Equipment Plastlåda och ökar korvlager max till 1000
