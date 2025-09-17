@@ -3,7 +3,15 @@ import { researchUnlock, startResearch } from '../engine/researchEngine.js';
 import { researchData } from '../data/researchData.js';
 import { finishAllResearchTimers } from '../engine/researchEngine.js'; // cheat code 
 
-export function renderResearchTab({ tabContent }) {
+export function renderResearchTab({ tabContent, mainScreen }) {
+   mainScreen.innerHTML = `
+    <div style="display:flex; justify-content:center; align-items:center; height:100%;">
+      <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/research/beaker-gif1.gif"
+           alt="Bubbling Beaker"
+           style="max-height:auto; max-width:auto;">
+    </div>
+  `;
+
   tabContent.innerHTML = '';
 
   // Check unlocks

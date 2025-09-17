@@ -2,12 +2,20 @@ import { handlekoktKorvClick } from '../engine/kioskEngine.js';
 import { handleCheatKorvClick } from  '../engine/kioskEngine.js';
 
 // ui.js calls this as renderKioskTab({ tabContent, mainScreen })
-export function renderKioskTab({ tabContent }) {
+export function renderKioskTab({ tabContent, mainScreen }) {
+    mainScreen.innerHTML = `
+    <div style="display:flex; justify-content:center; align-items:center; height:100%;">
+      <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/korvkioskmainscreen-inprogress.gif"
+           alt="Bubbling Beaker"
+           style="max-height:auto; max-width:auto;">
+    </div>
+  `;
+
   // Clear old kiosk container if it exists (prevents duplicates)
-  const existing = document.getElementById('kiosk-container');
+  /*const existing = document.getElementById('kiosk-container');
   if (existing) {
     existing.remove(); // 🔹 Safely remove any leftover kiosk container
-  }
+  }*/
 
   // Create kiosk container
   const kioskContainer = document.createElement('div');  

@@ -72,7 +72,7 @@ export function initUI() {
   mainScreen.className = 'main-screen';
   mainScreen.style.height = '400px';
   mainScreen.style.flexShrink = '0';
-  mainScreen.style.padding = '10px';
+  mainScreen.style.padding = '0px';
   mainScreen.style.borderBottom = '2px solid #ccc';
   mainScreen.style.background = '#fff';
   mainScreen.style.overflow = 'hidden';
