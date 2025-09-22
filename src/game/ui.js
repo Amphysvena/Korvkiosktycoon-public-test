@@ -110,7 +110,7 @@ export function initUI() {
   .forEach(tab => {
     const btn = document.createElement('button');
     btn.id = `btn-${tab.id}`;
-    btn.style.padding = '5px 10px';
+    btn.style.padding = '0px 10px';
     btn.style.fontSize = '16px';
     btn.style.cursor = 'pointer';
 
