@@ -18,7 +18,7 @@ const tabs = [
   //{ id: 'research', name: 'Research', render: renderResearchTab, unlocked: isResearchTabUnlocked() },
   {id: 'research', name: 'Research', render: renderResearchTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/research/beaker-frame-0.png`},
   {id: 'equipment', name: 'Equipment', render: renderEquipmentTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/equipment/equipment frame 0.png`},
-  {id: 'boogie',     name: 'Boogie',     render: renderBoogieTab,    unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duel frame 0.png` },
+  {id: 'boogie',     name: 'Boogie',     render: renderBoogieTab,    unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png` },
   {id: 'skills',     name: 'Skills',     render: renderSkillsTab,    unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/Skills/Skill 1 - Throw.png` },
   {id: 'recipes',    name: 'Recipes',    render: renderRecipesTab,   unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/recept/recipe-frame-0-.png` },
   {id: 'buildings',  name: 'Buildings',  render: renderBuildingsTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/building/building upgrade frame 0.png` },

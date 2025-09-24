@@ -1,3 +1,38 @@
+export const equipmentData = {
+    //korvlådor
+  plasticBox: {
+    name: "Plastlåda",
+    img: "src/game/Assets/img/equipment/korvlador/Korvlada1-plastladavarmkorv.png",
+    effectDescription: "Can cook some basic sausage types.",
+    slot: "korvBox", 
+    toggleable: null, // permanent effect when equipped
+    onEquip: (state) => {
+      // Unlock korv1 if not already unlocked
+      if (!state.equipment.korv1.unlocked) {
+        state.equipment.korv1.unlocked = true;
+        console.log("Kokt korv med bröd (korv1) unlocked!");
+      }
+
+      // Enable korv1, korv2, korv3 to be equipable
+      state.equipment.allowedKorvWeapons = ['korv1', 'korv2', 'korv3'];
+    },
+    onUnequip: null // change later to force unequip of all allowed weapons. 
+  },
+
+  //Primary Hand
+  korv1: {
+    name: "Kokt korv med bröd",
+    img: "src/game/Assets/img/equipment/Korvknappar/korv1.png",
+    slot: "primaryHand",
+    effectDescription: "A basic sausage with nothing on it.",
+    toggleable: true, // can be equipped/unequipped
+    onEquip: null, //add damage type later
+    onUnequip: null //add later
+  }
+
+};
+
+
 //pseudokod
 
 //I act 1, testversionen av spelet så är equipment bara för simpla checks om man vinner. Så all data i denna fil är främst för framtida bruk.
