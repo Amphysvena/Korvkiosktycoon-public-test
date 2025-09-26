@@ -1,3 +1,5 @@
+import { renderEquipmentTab } from '../ui/equipmentTab.js';
+
 export const equipmentData = {
     //korvlådor
   plasticBox: {
@@ -11,7 +13,7 @@ export const equipmentData = {
       if (!state.equipment.korv1.unlocked) {
         state.equipment.korv1.unlocked = true;
         console.log("Kokt korv med bröd (korv1) unlocked!");
-      }
+        }
 
       // Enable korv1, korv2, korv3 to be equipable
       state.equipment.allowedKorvWeapons = ['korv1', 'korv2', 'korv3'];

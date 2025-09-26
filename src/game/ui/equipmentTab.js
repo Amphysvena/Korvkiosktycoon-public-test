@@ -2,7 +2,7 @@ import { state } from '../state.js';
 import { equipmentData } from '../data/equipmentData.js';
 
 //creates buttons for equipment when they are unlocked
-export function createEquipmentButton(key) {
+export function createEquipmentButton(key, tabContent, mainScreen) {
   const equipmentState = state.equipment[key];
   const equipmentDef = equipmentData[key];
 
@@ -79,8 +79,11 @@ export function createEquipmentButton(key) {
     }
 
     // Equip this item
-    equipmentState.equipped = true;
-    if (equipmentDef.onEquip) equipmentDef.onEquip(state);
+equipmentState.equipped = true;
+if (equipmentDef.onEquip) equipmentDef.onEquip(state);
+
+// Refresh the equipment tab so newly unlocked items appear
+renderEquipmentTab({ tabContent, mainScreen });
 
     updateButtonVisual();
     updateSlotImage();
@@ -153,13 +156,10 @@ export function renderEquipmentTab({ tabContent, mainScreen }) {
 
   // Automatically generate buttons for all unlocked equipment
   for (const key in equipmentData) {
-    const btn = createEquipmentButton(key);
+    const btn = createEquipmentButton(key, tabContent, mainScreen); // pass UI references
     if (btn) tabContent.appendChild(btn);
   }
 }
-
-
-
 
 //Pseudokod
 
