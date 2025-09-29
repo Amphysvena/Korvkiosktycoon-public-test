@@ -79,11 +79,11 @@ export function createEquipmentButton(key, tabContent, mainScreen) {
     }
 
     // Equip this item
-equipmentState.equipped = true;
-if (equipmentDef.onEquip) equipmentDef.onEquip(state);
+    equipmentState.equipped = true;
+    if (equipmentDef.onEquip) equipmentDef.onEquip(state);
 
-// Refresh the equipment tab so newly unlocked items appear
-renderEquipmentTab({ tabContent, mainScreen });
+    // Refresh the equipment tab so newly unlocked items appear
+    renderEquipmentTab({ tabContent, mainScreen });
 
     updateButtonVisual();
     updateSlotImage();
@@ -92,10 +92,29 @@ renderEquipmentTab({ tabContent, mainScreen });
   return button;
 }
 
+// helper to render equipment buttons filtered by category
+function renderEquipmentButtons(categoryKey, equipmentButtonContainer, tabContent, mainScreen) {
+  // Clear previous
+  equipmentButtonContainer.innerHTML = '';
+
+  // Add all buttons for this category
+  for (const key in equipmentData) {
+    const equipment = equipmentData[key];
+    const stateItem = state.equipment[key];
+
+    if (!stateItem || !stateItem.unlocked) continue;
+    if (equipment.slot !== categoryKey) continue;
+
+    const btn = createEquipmentButton(key, tabContent, mainScreen);
+    if (btn) equipmentButtonContainer.appendChild(btn);
+  }
+}
+
 // Main Equipment Tab render function
 export function renderEquipmentTab({ tabContent, mainScreen }) {
   // Clear previous content
   mainScreen.innerHTML = '';
+  tabContent.innerHTML = '';
 
   // Create the equipment container (740x400) and center it
   const equipmentContainer = document.createElement('div');
@@ -139,26 +158,73 @@ export function renderEquipmentTab({ tabContent, mainScreen }) {
     slotDiv.appendChild(label);
 
     const img = document.createElement('img');
-    img.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`; // placeholder
     img.alt = slot.name;
     img.style.width = '64px';
     img.style.height = '64px';
     img.style.border = '2px solid #444';
     img.style.borderRadius = '8px';
-    img.style.opacity = '0.5';
-    slotDiv.appendChild(img);
 
+    // --- NEW: Only use placeholder if nothing is equipped ---
+    let equippedItem = Object.keys(state.equipment).find(
+      key => state.equipment[key]?.equipped && equipmentData[key]?.slot === slot.key
+    );
+
+    if (equippedItem) {
+      // show the equipped item's image if found
+      img.src = `${KorvkioskData.pluginUrl}${equipmentData[equippedItem].img}`;
+      img.style.opacity = '1';
+    } else {
+      // fallback placeholder
+      img.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`;
+      img.style.opacity = '0.5';
+    }
+
+    slotDiv.appendChild(img);
     equipmentContainer.appendChild(slotDiv);
   });
 
-  // Clear tabContent
-  tabContent.innerHTML = '';
+  // --- NEW: Category buttons in tabContent ---
+  let activeCategory = slots[0].key; // default selected
+  const categoryContainer = document.createElement('div');
+  categoryContainer.style.display = 'flex';
+  categoryContainer.style.justifyContent = 'space-around';
+  categoryContainer.style.alignItems = 'flex-start'; // keep buttons top-aligned
+  categoryContainer.style.height = '40px';
+  categoryContainer.style.marginBottom = '8px'; // spacing before equipment buttons
 
-  // Automatically generate buttons for all unlocked equipment
-  for (const key in equipmentData) {
-    const btn = createEquipmentButton(key, tabContent, mainScreen); // pass UI references
-    if (btn) tabContent.appendChild(btn);
-  }
+  // container for equipment buttons
+  const equipmentButtonContainer = document.createElement('div');
+  equipmentButtonContainer.style.display = 'flex';
+  equipmentButtonContainer.style.flexWrap = 'wrap';
+  equipmentButtonContainer.style.justifyContent = 'left';
+  equipmentButtonContainer.style.gap = '5px';
+  equipmentButtonContainer.style.marginTop = '1px';
+
+  slots.forEach(slot => {
+    const btn = document.createElement('button');
+    btn.textContent = slot.name;
+    btn.style.flex = '1';
+    btn.style.margin = '0 5px';
+    btn.style.padding = '8px';
+    btn.style.cursor = 'pointer';
+    btn.style.fontWeight = activeCategory === slot.key ? 'bold' : 'normal';
+
+    btn.addEventListener('click', () => {
+      activeCategory = slot.key;
+      renderEquipmentButtons(activeCategory, equipmentButtonContainer, tabContent, mainScreen);
+      // update styles
+      Array.from(categoryContainer.children).forEach(b => b.style.fontWeight = 'normal');
+      btn.style.fontWeight = 'bold';
+    });
+
+    categoryContainer.appendChild(btn);
+  });
+
+  tabContent.appendChild(categoryContainer);
+  tabContent.appendChild(equipmentButtonContainer);
+
+  // Initial render of equipment buttons
+  renderEquipmentButtons(activeCategory, equipmentButtonContainer, tabContent, mainScreen);
 }
 
 //Pseudokod

@@ -20,6 +20,16 @@ export const state = {
     equippedSecondary: null
   },
 
+  // Boogie stats
+  boogie: {
+    maxHP: 3,
+    currentHP: 3,
+    equippedDamageType: null,
+    attackPower: 0,
+    defense: 0,
+    statusEffects: [] // e.g., poison, burn, freeze
+  },
+
   autoFryActive: false // toggleable after research is done
 };
 
@@ -35,5 +45,5 @@ for (const key in researchData) {
 
 //pseudokod
 
-//track character boogie stats - i början finns endast 1 max HP
+//track character boogie stats - i början finns endast 3 max HP
 //uppdateras från equipment slots i equipment.js

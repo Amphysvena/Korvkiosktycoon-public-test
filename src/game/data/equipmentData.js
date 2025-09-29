@@ -28,8 +28,14 @@ export const equipmentData = {
     slot: "primaryHand",
     effectDescription: "A basic sausage with nothing on it.",
     toggleable: true, // can be equipped/unequipped
-    onEquip: null, //add damage type later
-    onUnequip: null //add later
+    onEquip: (state) => {
+    state.boogie.equippedDamageType = "normal";
+    state.boogie.attackPower = 1; // modify if equipment gives bonus
+},
+    onUnequip: (state) => {
+      // This function runs when unequipped
+      state.boogie.equippedDamageType = null; // clear damage type
+    }
   }
 
 };
