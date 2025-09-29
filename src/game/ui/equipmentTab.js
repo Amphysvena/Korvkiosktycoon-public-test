@@ -1,8 +1,8 @@
 import { state } from '../state.js';
 import { equipmentData } from '../data/equipmentData.js';
 
-//creates buttons for equipment when they are unlocked
-export function createEquipmentButton(key, tabContent, mainScreen) {
+// Creates buttons for equipment when they are unlocked
+export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, infoRight) {
   const equipmentState = state.equipment[key];
   const equipmentDef = equipmentData[key];
 
@@ -21,7 +21,7 @@ export function createEquipmentButton(key, tabContent, mainScreen) {
   buttonImg.style.width = '64px';
   buttonImg.style.height = '64px';
   buttonImg.style.display = 'block';
-  buttonImg.style.transition = 'opacity 0.2s'; // smooth fade
+  buttonImg.style.transition = 'opacity 0.2s'; 
   button.appendChild(buttonImg);
 
   // Tooltip
@@ -29,12 +29,42 @@ export function createEquipmentButton(key, tabContent, mainScreen) {
     button.title = equipmentDef.effectDescription;
   }
 
-  // Helper to update button visual (opacity)
+  // --- INFO LEFT: show item description on hover ---
+  button.addEventListener('mouseenter', () => {
+    if (infoLeft) infoLeft.innerHTML = equipmentDef.itemDescription || 'No description available';
+  });
+  button.addEventListener('mouseleave', () => {
+    if (infoLeft) infoLeft.innerHTML = 'Hover over an item for information';
+  });
+
+  // --- RIGHT INFO PANEL SETUP ---
+  if (!infoRight) {
+    infoRight = document.createElement('div');
+    infoRight.id = 'info-right';
+    
+    mainScreen.parentElement.appendChild(infoRight);
+  }
+
+  // --- FUNCTION: update boogie stats ---
+  function updateBoogieStats() {
+    const b = state.boogie;
+    infoRight.innerHTML = `
+      <div>HP: ${b.currentHP} / ${b.maxHP}</div>
+      <div>Attack: ${b.attackPower}</div>
+      <div>Defense: ${b.defense}</div>
+      <div>Damage Type: ${b.equippedDamageType || 'None'}</div>
+      <div>Status Effects: ${b.statusEffects.length > 0 ? b.statusEffects.join(', ') : 'None'}</div>
+    `;
+  }
+
+  // Initial render of stats
+  updateBoogieStats();
+
+  // --- Equip/unequip visual updates ---
   function updateButtonVisual() {
     buttonImg.style.opacity = equipmentState.equipped ? '1' : '0.4';
   }
 
-  // Helper to update the corresponding slot image
   function updateSlotImage() {
     const slotDiv = document.querySelector(`#slot-${equipmentDef.slot} img`);
     if (!slotDiv) return;
@@ -43,23 +73,23 @@ export function createEquipmentButton(key, tabContent, mainScreen) {
       slotDiv.src = `${KorvkioskData.pluginUrl}${equipmentDef.img}`;
       slotDiv.style.opacity = '1';
     } else {
-      slotDiv.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`; // placeholder
+      slotDiv.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`;
       slotDiv.style.opacity = '0.5';
     }
   }
 
-  // Initial update
   updateButtonVisual();
   updateSlotImage();
 
-  // Click behavior: equip / unequip
+  // --- CLICK HANDLER ---
   button.addEventListener('click', () => {
-    // If already equipped, unequip it
+    // Unequip if already equipped
     if (equipmentState.equipped) {
       equipmentState.equipped = false;
       if (equipmentDef.onUnequip) equipmentDef.onUnequip(state);
       updateButtonVisual();
       updateSlotImage();
+      updateBoogieStats();
       return;
     }
 
@@ -81,42 +111,36 @@ export function createEquipmentButton(key, tabContent, mainScreen) {
     // Equip this item
     equipmentState.equipped = true;
     if (equipmentDef.onEquip) equipmentDef.onEquip(state);
-
-    // Refresh the equipment tab so newly unlocked items appear
-    renderEquipmentTab({ tabContent, mainScreen });
-
+    renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight });
     updateButtonVisual();
     updateSlotImage();
+    updateBoogieStats();
   });
 
   return button;
 }
 
-// helper to render equipment buttons filtered by category
-function renderEquipmentButtons(categoryKey, equipmentButtonContainer, tabContent, mainScreen) {
-  // Clear previous
+// Helper to render equipment buttons filtered by category
+function renderEquipmentButtons(categoryKey, equipmentButtonContainer, tabContent, mainScreen, infoLeft, infoRight) {
   equipmentButtonContainer.innerHTML = '';
 
-  // Add all buttons for this category
   for (const key in equipmentData) {
     const equipment = equipmentData[key];
     const stateItem = state.equipment[key];
-
     if (!stateItem || !stateItem.unlocked) continue;
     if (equipment.slot !== categoryKey) continue;
 
-    const btn = createEquipmentButton(key, tabContent, mainScreen);
+    const btn = createEquipmentButton(key, tabContent, mainScreen, infoLeft, infoRight);
     if (btn) equipmentButtonContainer.appendChild(btn);
   }
 }
 
 // Main Equipment Tab render function
-export function renderEquipmentTab({ tabContent, mainScreen }) {
-  // Clear previous content
+export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   mainScreen.innerHTML = '';
   tabContent.innerHTML = '';
 
-  // Create the equipment container (740x400) and center it
+  // --- CENTER INTERFACE ---
   const equipmentContainer = document.createElement('div');
   equipmentContainer.style.width = '740px';
   equipmentContainer.style.height = '400px';
@@ -125,8 +149,8 @@ export function renderEquipmentTab({ tabContent, mainScreen }) {
   equipmentContainer.style.justifyItems = 'center';
   equipmentContainer.style.alignItems = 'center';
   equipmentContainer.style.gap = '20px';
+  equipmentContainer.style.border = 'solid';
 
-  // Centering wrapper inside mainScreen
   const wrapper = document.createElement('div');
   wrapper.style.width = '100%';
   wrapper.style.height = '100%';
@@ -136,7 +160,7 @@ export function renderEquipmentTab({ tabContent, mainScreen }) {
   wrapper.appendChild(equipmentContainer);
   mainScreen.appendChild(wrapper);
 
-  // Create slot placeholders with ids
+  // --- SLOTS ---
   const slots = [
     { name: 'Primary Hand', key: 'primaryHand' },
     { name: 'Secondary Hand', key: 'secondaryHand' },
@@ -164,17 +188,14 @@ export function renderEquipmentTab({ tabContent, mainScreen }) {
     img.style.border = '2px solid #444';
     img.style.borderRadius = '8px';
 
-    // --- NEW: Only use placeholder if nothing is equipped ---
     let equippedItem = Object.keys(state.equipment).find(
       key => state.equipment[key]?.equipped && equipmentData[key]?.slot === slot.key
     );
 
     if (equippedItem) {
-      // show the equipped item's image if found
       img.src = `${KorvkioskData.pluginUrl}${equipmentData[equippedItem].img}`;
       img.style.opacity = '1';
     } else {
-      // fallback placeholder
       img.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`;
       img.style.opacity = '0.5';
     }
@@ -183,16 +204,15 @@ export function renderEquipmentTab({ tabContent, mainScreen }) {
     equipmentContainer.appendChild(slotDiv);
   });
 
-  // --- NEW: Category buttons in tabContent ---
-  let activeCategory = slots[0].key; // default selected
+  // --- CATEGORY BUTTONS ---
+  let activeCategory = slots[0].key;
   const categoryContainer = document.createElement('div');
   categoryContainer.style.display = 'flex';
   categoryContainer.style.justifyContent = 'space-around';
-  categoryContainer.style.alignItems = 'flex-start'; // keep buttons top-aligned
+  categoryContainer.style.alignItems = 'flex-start';
   categoryContainer.style.height = '40px';
-  categoryContainer.style.marginBottom = '8px'; // spacing before equipment buttons
+  categoryContainer.style.marginBottom = '8px';
 
-  // container for equipment buttons
   const equipmentButtonContainer = document.createElement('div');
   equipmentButtonContainer.style.display = 'flex';
   equipmentButtonContainer.style.flexWrap = 'wrap';
@@ -211,8 +231,7 @@ export function renderEquipmentTab({ tabContent, mainScreen }) {
 
     btn.addEventListener('click', () => {
       activeCategory = slot.key;
-      renderEquipmentButtons(activeCategory, equipmentButtonContainer, tabContent, mainScreen);
-      // update styles
+      renderEquipmentButtons(activeCategory, equipmentButtonContainer, tabContent, mainScreen, infoLeft, infoRight);
       Array.from(categoryContainer.children).forEach(b => b.style.fontWeight = 'normal');
       btn.style.fontWeight = 'bold';
     });
@@ -223,9 +242,13 @@ export function renderEquipmentTab({ tabContent, mainScreen }) {
   tabContent.appendChild(categoryContainer);
   tabContent.appendChild(equipmentButtonContainer);
 
-  // Initial render of equipment buttons
-  renderEquipmentButtons(activeCategory, equipmentButtonContainer, tabContent, mainScreen);
+  // --- INITIAL RENDER ---
+  renderEquipmentButtons(activeCategory, equipmentButtonContainer, tabContent, mainScreen, infoLeft, infoRight);
+
+  // --- DEFAULT INFO LEFT TEXT ---
+  if (infoLeft) infoLeft.innerHTML = 'Select an item for info';
 }
+
 
 //Pseudokod
 

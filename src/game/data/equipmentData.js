@@ -6,6 +6,7 @@ export const equipmentData = {
     name: "Plastlåda",
     img: "src/game/Assets/img/equipment/korvlador/Korvlada1-plastladavarmkorv.png",
     effectDescription: "Can cook some basic sausage types.",
+    itemDescription: "An old laundry box repurposed for sausage creation. The boiling water smells like detergent.",
     slot: "korvBox", 
     toggleable: null, // permanent effect when equipped
     onEquip: (state) => {
@@ -27,14 +28,16 @@ export const equipmentData = {
     img: "src/game/Assets/img/equipment/Korvknappar/korv1.png",
     slot: "primaryHand",
     effectDescription: "A basic sausage with nothing on it.",
+    itemDescription: "A lukewarm sausage in mushy bread. No condiments.",
     toggleable: true, // can be equipped/unequipped
     onEquip: (state) => {
     state.boogie.equippedDamageType = "normal";
-    state.boogie.attackPower = 1; // modify if equipment gives bonus
+    state.boogie.attackPower += 1; // modify if equipment gives bonus
 },
     onUnequip: (state) => {
       // This function runs when unequipped
       state.boogie.equippedDamageType = null; // clear damage type
+      state.boogie.attackPower -= 1;
     }
   }
 
