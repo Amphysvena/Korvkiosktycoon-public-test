@@ -6,7 +6,7 @@ export const state = {
   korvtak: 250,
 
   research: {
-    autoFry: { unlocked: false, researching: false, remainingTime: 0, completed: false }
+    
   },
 
   equipment: {

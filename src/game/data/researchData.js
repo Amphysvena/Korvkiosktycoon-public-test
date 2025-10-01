@@ -5,6 +5,7 @@ export const researchData = {
   img: "Research1-Autofry.png",
   cost: 10,
   duration: 30,
+  effectAmount: 1, 
   effect: (state) => {
     state.korv += 1;
     if (state.korv > state.korvtak) state.korv = state.korvtak;

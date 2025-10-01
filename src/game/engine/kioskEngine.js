@@ -15,7 +15,6 @@ export function handlekoktKorvClick() {
 
   if (state.korv < state.korvtak) {
     state.korv += 1;
-    console.log(`Korv: ${state.korv}`);
     updateKorvCounter(state.korv);
   } else {
     console.log("Korvtak reached! No more korv can be added.");

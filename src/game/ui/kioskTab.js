@@ -1,133 +1,129 @@
-import { handlekoktKorvClick } from '../engine/kioskEngine.js';
-import { handleCheatKorvClick } from  '../engine/kioskEngine.js';
+import { handlekoktKorvClick, handleCheatKorvClick } from '../engine/kioskEngine.js';
 import { state } from '../state.js';
+import { kioskData } from '../data/kioskData.js';
+import { researchData } from '../data/researchData.js'; // <-- to read passive sources
 
-// ui.js calls this as renderKioskTab({ tabContent, mainScreen })
-export function renderKioskTab({ tabContent, mainScreen }) {
-    // ── Remove previous centering wrapper if present (only refresh that area) ──
-    const prevCenter = document.getElementById('mainscreen-centering');
-    if (prevCenter) prevCenter.remove();
+export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) {
+  // ── Remove previous centering wrapper if present ──
+  const prevCenter = document.getElementById('mainscreen-centering');
+  if (prevCenter) prevCenter.remove();
 
-    // ── Create centering container that mimics your original inline HTML centering ──
-    const centering = document.createElement('div');
-    centering.id = 'mainscreen-centering';
-    // Keep sizing from ui.js, prevent vertical bleed
-    centering.style.display = 'flex';
-    centering.style.justifyContent = 'center';
-    centering.style.alignItems = 'flex-start'; // flush top to avoid bleed
-    centering.style.height = '100%';
-    centering.style.width = '100%';
-    
-    // ── Create a wrapper that will hold the base GIF and overlays ──
-    const wrapper = document.createElement('div');
-    wrapper.id = 'mainscreen-wrapper';
-    wrapper.style.position = 'relative';   // overlays positioned relative to this
-    wrapper.style.width = '740px';
-    wrapper.style.height = '400px';
-    
-    // Base mainscreen GIF
-    const baseImg = document.createElement('img');
-    baseImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/korvkioskmainscreen-inprogress.gif`;
-    baseImg.style.display = 'block';   // remove inline spacing
-    baseImg.style.width = '740px';
-    baseImg.style.height = '400px';
-    baseImg.style.margin = '0';
-    baseImg.style.padding = '0';
-    baseImg.style.border = 'none';
-    baseImg.style.boxSizing = 'border-box';
-    wrapper.appendChild(baseImg);
+  // ── Centering container ──
+  const centering = document.createElement('div');
+  centering.id = 'mainscreen-centering';
+  centering.style.display = 'flex';
+  centering.style.justifyContent = 'center';
+  centering.style.alignItems = 'flex-start';
+  centering.style.height = '100%';
+  centering.style.width = '100%';
 
-    // ── Decide which additional images to show ──
-    const imagesToShow = [];
+  // ── Wrapper for base GIF and overlays ──
+  const wrapper = document.createElement('div');
+  wrapper.id = 'mainscreen-wrapper';
+  wrapper.style.position = 'relative';
+  wrapper.style.width = '740px';
+  wrapper.style.height = '400px';
 
-    // Case: autofry researched but not active
-    if (state.research.autoFry && state.research.autoFry.unlocked && !state.autoFryActive) {
-        imagesToShow.push(`${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/autofry.png`);
-    }
+  const baseImg = document.createElement('img');
+  baseImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/korvkioskmainscreen-inprogress.gif`;
+  baseImg.style.display = 'block';
+  baseImg.style.width = '740px';
+  baseImg.style.height = '400px';
+  wrapper.appendChild(baseImg);
 
-    // Case: autofry active
-    if (state.autoFryActive) {
-        imagesToShow.push(`${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/autofryactive.gif`);
-    }
+  // ── Optional overlays ──
+  const imagesToShow = [];
+  if (state.research.autoFry && state.research.autoFry.unlocked && !state.autoFryActive) {
+    imagesToShow.push(`${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/autofry.png`);
+  }
+  if (state.autoFryActive) {
+    imagesToShow.push(`${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/autofryactive.gif`);
+  }
 
-    // Append all images as absolute overlays (same size as base GIF)
-    imagesToShow.forEach(src => {
-        const img = document.createElement('img');
-        img.src = src;
-        img.style.position = 'absolute';
-        img.style.top = '0';
-        img.style.left = '0';
-        img.style.width = '740px';   // match base image size
-        img.style.height = '400px';
-        img.style.pointerEvents = 'none'; // don't block clicks
-        wrapper.appendChild(img);
-    });
+  imagesToShow.forEach(src => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.style.position = 'absolute';
+    img.style.top = '0';
+    img.style.left = '0';
+    img.style.width = '740px';
+    img.style.height = '400px';
+    img.style.pointerEvents = 'none';
+    wrapper.appendChild(img);
+  });
 
-    // Put wrapper inside centering container and append to mainScreen
-    centering.appendChild(wrapper);
-    mainScreen.appendChild(centering);
+  centering.appendChild(wrapper);
+  mainScreen.appendChild(centering);
 
-    // ── Kiosk buttons container ──
-    // Clear old kiosk container if it exists (prevents duplicates)
-    /*const existing = document.getElementById('kiosk-container');
-    if (existing) {
-      existing.remove(); // 🔹 Safely remove any leftover kiosk container
-    }*/
+  // ── Kiosk buttons container ──
+  const kioskContainer = document.createElement('div');
+  kioskContainer.id = 'kiosk-container';
 
-    // Create kiosk container
-    const kioskContainer = document.createElement('div');  
-    kioskContainer.id = 'kiosk-container';
+  for (const key in kioskData) {
+    const item = kioskData[key];
 
-    // Create the korv button
-    const koktKorvButton = document.createElement('button');
-    koktKorvButton.type = 'button';
-    koktKorvButton.id = 'koktKorvbutton';
-    koktKorvButton.innerHTML = `
-      <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/equipment/Korvknappar/korv1.png" 
-           alt="Korv" style="width: 64px; height: 64px;">
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'kiosk-button';
+    btn.innerHTML = `
+      <img src="${KorvkioskData.pluginUrl}${item.img}" 
+           alt="${item.name}" style="width:64px; height:64px;">
     `;
 
-    // Hook up the button logic
-    koktKorvButton.addEventListener('click', handlekoktKorvClick);
+    // Hook up button logic
+    if (key === 'korv1') btn.addEventListener('click', handlekoktKorvClick);
+    if (key === 'fuskkorv') btn.addEventListener('click', handleCheatKorvClick);
 
-    // Add button to kiosk container
-    kioskContainer.appendChild(koktKorvButton);
+    // Hover info on left panel
+    btn.addEventListener('mouseenter', () => {
+      if (!infoLeft) return;
+      infoLeft.innerHTML = `
+        <div style="font-size: 20px; font-weight: bold; text-decoration: underline; color: black;">
+          ${item.name}
+        </div>
+        <div style="margin-top: 8px; font-size: 16px;">
+          ${item.description}
+        </div>
+      `;
+    });
+    btn.addEventListener('mouseleave', () => {
+      if (!infoLeft) return;
+      infoLeft.innerHTML = '';
+    });
 
-    // 🔹 Only append kiosk container to the provided tabContent, never mainScreen
-    tabContent.appendChild(kioskContainer);
+    kioskContainer.appendChild(btn);
+  }
 
-    // ── Cheat button for testing ──
-    const koktKorvCheatButton = document.createElement('button');
-    koktKorvCheatButton.type = 'button';
-    koktKorvCheatButton.id = 'koktKorvCheatButton';
-    koktKorvCheatButton.style.width = '64px';
-    koktKorvCheatButton.style.height = '64px';
-    koktKorvCheatButton.style.position = 'center';
-    koktKorvCheatButton.style.border = 'none';
-    koktKorvCheatButton.style.padding = '0';
-    koktKorvCheatButton.style.cursor = 'pointer';
+  tabContent.appendChild(kioskContainer);
 
-    // Add the same image as the original button
-    const buttonImg = document.createElement('img');
-    buttonImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/equipment/Korvknappar/korv1.png`;
-    buttonImg.style.width = '64px';
-    buttonImg.style.height = '64px';
-    buttonImg.style.display = 'block';
-    koktKorvCheatButton.appendChild(buttonImg);
+  // ── Right Panel: Passive income stats ──
+  function updateKioskStats() {
+    if (!infoRight) return;
 
-    // Add the +1000 text under the image
-    const textDiv = document.createElement('div');
-    textDiv.textContent = '+1000';
-    textDiv.style.textAlign = 'center';
-    textDiv.style.fontSize = '10px';
-    koktKorvCheatButton.appendChild(textDiv);
+    let totalPerSecond = 0;
 
-    // Hook up the click event to your cheat function
-    koktKorvCheatButton.addEventListener('click', handleCheatKorvClick);
+    // Sum passive sources from researchData
+    for (const key in researchData) {
+      const r = researchData[key];
+      if (r.toggleable && state[r.toggleable]) {
+        if (r.effectAmount && r.effectInterval) {
+          totalPerSecond += r.effectAmount / (r.effectInterval / 1000);
+        }
+      }
+    }
 
-    // Append to the container
-    kioskContainer.appendChild(koktKorvCheatButton);
-} //cheat button code end
+    // TODO: Later add factories, buildings, other passive sources
+
+    infoRight.innerHTML = `
+      <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">Kiosk Stats</div>
+      <div>Passive Income: ${totalPerSecond.toFixed(2)} korv/sec</div>
+    `;
+  }
+
+  updateKioskStats();
+}
+
+
 
 // pseudocode
 
