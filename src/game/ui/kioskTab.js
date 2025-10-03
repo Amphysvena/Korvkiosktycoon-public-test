@@ -4,6 +4,11 @@ import { kioskData } from '../data/kioskData.js';
 import { researchData } from '../data/researchData.js'; // <-- to read passive sources
 
 export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) {
+  // ── Cleanup old interval if kioskTab was opened before ──
+  if (tabContent.kioskCleanup) {
+    tabContent.kioskCleanup();
+  }
+
   // ── Remove previous centering wrapper if present ──
   const prevCenter = document.getElementById('mainscreen-centering');
   if (prevCenter) prevCenter.remove();
@@ -120,7 +125,14 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
     `;
   }
 
+  // Initial render
   updateKioskStats();
+
+  // ── Auto-update every 30 seconds ──
+  const intervalId = setInterval(updateKioskStats, 30000);
+
+  // Store cleanup function to remove interval when leaving kioskTab
+  tabContent.kioskCleanup = () => clearInterval(intervalId);
 }
 
 

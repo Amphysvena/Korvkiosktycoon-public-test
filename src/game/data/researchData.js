@@ -29,6 +29,7 @@ export const researchData = {
 
   fishBox : {
   name: "fisklåda",
+  img: "Research3-fisklåda.png",
   cost: 750,
   duration: 300,
   criteria: (state) => state.korv >= 750
@@ -36,6 +37,7 @@ export const researchData = {
 
   condimentsMachine : {
   name: "condiments machine",
+  img: "Research4-Condimentmachine.png",
   criteria: (state) => false //placeholder
   }
 };
