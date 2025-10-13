@@ -1,14 +1,9 @@
 import { handlekoktKorvClick, handleCheatKorvClick } from '../engine/kioskEngine.js';
 import { state } from '../state.js';
 import { kioskData } from '../data/kioskData.js';
-import { researchData } from '../data/researchData.js'; // <-- to read passive sources
+import { researchData } from '../data/researchData.js'; 
 
 export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) {
-  // ── Cleanup old interval if kioskTab was opened before ──
-  if (tabContent.kioskCleanup) {
-    tabContent.kioskCleanup();
-  }
-
   // ── Remove previous centering wrapper if present ──
   const prevCenter = document.getElementById('mainscreen-centering');
   if (prevCenter) prevCenter.remove();
@@ -66,7 +61,6 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
 
   for (const key in kioskData) {
     const item = kioskData[key];
-
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'kiosk-button';
@@ -75,25 +69,24 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
            alt="${item.name}" style="width:64px; height:64px;">
     `;
 
-    // Hook up button logic
     if (key === 'korv1') btn.addEventListener('click', handlekoktKorvClick);
     if (key === 'fuskkorv') btn.addEventListener('click', handleCheatKorvClick);
 
-    // Hover info on left panel
     btn.addEventListener('mouseenter', () => {
-      if (!infoLeft) return;
-      infoLeft.innerHTML = `
-        <div style="font-size: 20px; font-weight: bold; text-decoration: underline; color: black;">
-          ${item.name}
-        </div>
-        <div style="margin-top: 8px; font-size: 16px;">
-          ${item.description}
-        </div>
-      `;
+      if (infoLeft) {
+        infoLeft.innerHTML = `
+        <div style="text-align: center;">
+          <div style="font-size: 20px; font-weight: bold; text-decoration: underline; color: black; ">
+            ${item.name}
+          </div>
+          <div style="margin-top: 8px; font-size: 16px;">
+            ${item.description}
+          </div>
+        `;
+      }
     });
     btn.addEventListener('mouseleave', () => {
-      if (!infoLeft) return;
-      infoLeft.innerHTML = '';
+      if (infoLeft) infoLeft.innerHTML = '';
     });
 
     kioskContainer.appendChild(btn);
@@ -107,7 +100,6 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
 
     let totalPerSecond = 0;
 
-    // Sum passive sources from researchData
     for (const key in researchData) {
       const r = researchData[key];
       if (r.toggleable && state[r.toggleable]) {
@@ -116,8 +108,6 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
         }
       }
     }
-
-    // TODO: Later add factories, buildings, other passive sources
 
     infoRight.innerHTML = `
       <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">Kiosk Stats</div>
@@ -128,12 +118,10 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
   // Initial render
   updateKioskStats();
 
-  // ── Auto-update every 30 seconds ──
-  const intervalId = setInterval(updateKioskStats, 30000);
-
-  // Store cleanup function to remove interval when leaving kioskTab
-  tabContent.kioskCleanup = () => clearInterval(intervalId);
+  // ── Expose the function so other actions can refresh it ──
+  return { updateKioskStats };
 }
+
 
 
 

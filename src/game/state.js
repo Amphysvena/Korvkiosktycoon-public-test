@@ -10,7 +10,10 @@ export const state = {
   },
 
   equipment: {
+    //korvlådor
     plasticBox: { unlocked: false, equipped: false },
+    fishBox: { unlocked: false, equipped: false},
+    //korv
     korv1: { unlocked: false, equipped: false },
     // Track which weapons are allowed to be equipped
     allowedKorvWeapons: [],
@@ -24,7 +27,7 @@ export const state = {
   boogie: {
     maxHP: 3,
     currentHP: 3,
-    equippedDamageType: null,
+    damageTypes: new Set (),
     attackPower: 0,
     defense: 0,
     statusEffects: [] // e.g., poison, burn, freeze

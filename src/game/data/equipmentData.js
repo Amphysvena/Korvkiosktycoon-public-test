@@ -1,7 +1,7 @@
 import { renderEquipmentTab } from '../ui/equipmentTab.js';
 
 export const equipmentData = {
-    //korvlådor
+  //korvlådor
   plasticBox: {
     name: "Plastlåda",
     img: "src/game/Assets/img/equipment/korvlador/Korvlada1-plastladavarmkorv.png",
@@ -14,12 +14,30 @@ export const equipmentData = {
       if (!state.equipment.korv1.unlocked) {
         state.equipment.korv1.unlocked = true;
         console.log("Kokt korv med bröd (korv1) unlocked!");
-        }
+      }
 
       // Enable korv1, korv2, korv3 to be equipable
       state.equipment.allowedKorvWeapons = ['korv1', 'korv2', 'korv3'];
     },
     onUnequip: null // change later to force unequip of all allowed weapons. 
+  },
+
+  fishBox: {
+    name: "Fisklåda",
+    img: "src/game/Assets/img/research/Research3-fisklåda.png",
+    effectDescription: "Makes sausages edible by freezing.",
+    itemDescription: "An unlocked freezing compartment in the old laundry box. Who put this there?",
+    slot: "korvBox",
+    toggleable: null,
+    onEquip: (state) => {
+      // Enable korv1, korv2, korv3 to be equipable
+      state.equipment.allowedKorvWeapons = ['korv1', 'korv2', 'korv3'];
+      state.boogie.damageTypes.add("cold");
+    },
+    onUnequip: (state) => {
+      state.boogie.damageTypes.delete("cold");
+      //unequip code later
+    }
   },
 
   //Primary Hand
@@ -31,17 +49,16 @@ export const equipmentData = {
     itemDescription: "A lukewarm sausage in mushy bread. No condiments.",
     toggleable: true, // can be equipped/unequipped
     onEquip: (state) => {
-    state.boogie.equippedDamageType = "normal";
-    state.boogie.attackPower += 1; // modify if equipment gives bonus
-},
+      state.boogie.damageTypes.add("normal");
+      state.boogie.attackPower += 1; // modify if equipment gives bonus
+    },
     onUnequip: (state) => {
-      // This function runs when unequipped
-      state.boogie.equippedDamageType = null; // clear damage type
+      state.boogie.damageTypes.delete("normal");
       state.boogie.attackPower -= 1;
     }
   }
-
 };
+
 
 
 //pseudokod

@@ -30,32 +30,45 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
   }
 
   // --- INFO LEFT: show item description on hover ---
-  button.addEventListener('mouseenter', () => {
-    if (infoLeft) infoLeft.innerHTML = equipmentDef.itemDescription || 'No description available';
-  });
-  button.addEventListener('mouseleave', () => {
-    if (infoLeft) infoLeft.innerHTML = 'Hover over an item for information';
-  });
-
-  // --- RIGHT INFO PANEL SETUP ---
-  if (!infoRight) {
-    infoRight = document.createElement('div');
-    infoRight.id = 'info-right';
-    
-    mainScreen.parentElement.appendChild(infoRight);
+button.addEventListener('mouseenter', () => {
+  if (infoLeft) {
+    infoLeft.innerHTML = `<div style="text-align: center;">${equipmentDef.itemDescription || 'No description available'}</div>`;
   }
+});
 
-  // --- FUNCTION: update boogie stats ---
-  function updateBoogieStats() {
-    const b = state.boogie;
-    infoRight.innerHTML = `
-      <div>HP: ${b.currentHP} / ${b.maxHP}</div>
-      <div>Attack: ${b.attackPower}</div>
-      <div>Defense: ${b.defense}</div>
-      <div>Damage Type: ${b.equippedDamageType || 'None'}</div>
-      <div>Status Effects: ${b.statusEffects.length > 0 ? b.statusEffects.join(', ') : 'None'}</div>
-    `;
+button.addEventListener('mouseleave', () => {
+  if (infoLeft) {
+    infoLeft.innerHTML = `<div style="text-align: center;">Hover over an item for information</div>`;
   }
+});
+
+  // --- FUNCTION: update boogie stats (only if infoRight exists) ---
+function updateBoogieStats() {
+  if (!infoRight) return;
+  const b = state.boogie;
+
+  // Convert Set to array and join for display
+  const damageText = b.damageTypes && b.damageTypes.size > 0
+    ? Array.from(b.damageTypes).join(', ')
+    : 'None';
+
+  infoRight.innerHTML = `
+  <div style="
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+    height: 100%;
+    text-align: left;
+  ">
+    <div>HP: ${b.currentHP} / ${b.maxHP}</div>
+    <div>Attack: ${b.attackPower}</div>
+    <div>Defense: ${b.defense}</div>
+    <div>Damage Types: ${damageText}</div>
+    <div>Status Effects: ${b.statusEffects.length > 0 ? b.statusEffects.join(', ') : 'None'}</div>
+  </div>
+`;
+}
 
   // Initial render of stats
   updateBoogieStats();
@@ -139,6 +152,16 @@ function renderEquipmentButtons(categoryKey, equipmentButtonContainer, tabConten
 export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   mainScreen.innerHTML = '';
   tabContent.innerHTML = '';
+
+  // --- ensure equipmentTab has its own infoRight ---
+  if (!infoRight) {
+    infoRight = document.createElement('div');
+    infoRight.id = 'equipment-info-right';
+    infoRight.style.border = '1px solid #444';
+    infoRight.style.padding = '8px';
+    infoRight.style.minWidth = '150px';
+    tabContent.appendChild(infoRight);
+  }
 
   // --- CENTER INTERFACE ---
   const equipmentContainer = document.createElement('div');
@@ -248,6 +271,7 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
   // --- DEFAULT INFO LEFT TEXT ---
   if (infoLeft) infoLeft.innerHTML = 'Select an item for info';
 }
+
 
 
 //Pseudokod

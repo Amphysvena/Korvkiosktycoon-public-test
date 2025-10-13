@@ -32,7 +32,12 @@ export const researchData = {
   img: "Research3-fisklåda.png",
   cost: 750,
   duration: 300,
-  criteria: (state) => state.korv >= 750
+  criteria: (state) => state.korv >= 750,
+  effect: (state) => {
+    state.korvtak += 6350;
+    state.equipment.fishBox.unlocked = true; // make sure this exists
+  }
+ 
   },
 
   condimentsMachine : {

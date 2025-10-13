@@ -110,7 +110,7 @@ export function initUI() {
   infoRight.style.width = '230px';
   infoRight.style.height = '100%';
   infoRight.style.background = '#e5e5e5';
-  infoRight.style.color = '#111';
+  infoRight.style.color = '#c41313ff';
   infoRight.style.padding = '10px';
   infoRight.style.boxSizing = 'border-box';
   infoRight.style.overflowY = 'auto';
