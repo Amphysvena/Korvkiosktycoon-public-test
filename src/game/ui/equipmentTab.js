@@ -127,6 +127,10 @@ function updateBoogieStats() {
 
     // Equip this item
     equipmentState.equipped = true;
+    // --- Unlock skill Throw if equipping korv1 for the first time ---
+    if (key === 'korv1' && !state.skills.throw.unlocked) {
+      state.skills.throw.unlocked = true;
+    }
     if (equipmentDef.onEquip) equipmentDef.onEquip(state);
     renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight });
     updateButtonVisual();

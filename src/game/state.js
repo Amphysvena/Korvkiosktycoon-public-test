@@ -33,6 +33,12 @@ export const state = {
     statusEffects: [] // e.g., poison, burn, freeze
   },
 
+  skills: {
+    throw: { unlocked: false, level: 1 },
+  },
+
+
+
   autoFryActive: false // toggleable after research is done
 };
 

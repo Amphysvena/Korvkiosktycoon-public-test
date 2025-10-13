@@ -3,7 +3,7 @@ import { researchUnlock, startResearch, finishAllResearchTimers } from '../engin
 import { researchData } from '../data/researchData.js';
 
 export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight }) {
-  // ── Setup main image ──
+  // ── Setup main background image ──
   mainScreen.innerHTML = `
     <div style="display:flex; justify-content:center; align-items:center; height:100%;">
       <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/research/researchmainscreen.gif"
@@ -11,68 +11,65 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
     </div>
   `;
 
-  // ── Clear tab area ──
+  // ── Clear tab and info panels ──
   tabContent.innerHTML = '';
-
-  // ── Clear info boxes ──
   if (infoLeft) infoLeft.innerHTML = '';
   if (infoRight) infoRight.innerHTML = '<div style="font-size:18px; font-weight:bold;">Active Research</div>';
 
-  // ── Check unlocks ──
+  // ── Unlock logic ──
   researchUnlock();
 
-  // ── Helper: Create a button for each research ──
+  // ── Research container (like kioskContainer) ──
+  const researchContainer = document.createElement('div');
+  researchContainer.id = 'research-container';
+  
+  // ── Helper: Create a research button ──
   function createResearchButton(key) {
     const researchState = state.research[key];
     const researchDef = researchData[key];
-
-    if (!researchState.unlocked) return null; // Skip locked research
+    if (!researchState.unlocked) return null;
 
     const button = document.createElement('button');
-    button.style.width = '64px';
-    button.style.height = '64px';
-    button.style.position = 'relative';
-    button.style.border = 'none';
-    button.style.padding = '0';
-    button.style.cursor = 'pointer';
-    button.style.margin = '4px';
+    button.type = 'button';
+    button.className = 'kiosk-button'; // ✅ reuse kiosk styling
 
-    const buttonImg = document.createElement('img');
-    buttonImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/research/${researchDef.img}`;
-    buttonImg.style.width = '64px';
-    buttonImg.style.height = '64px';
-    buttonImg.style.display = 'block';
-    button.appendChild(buttonImg);
+    // Button image
+    button.innerHTML = `
+      <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/research/${researchDef.img}" 
+           alt="${researchDef.name}" 
+           style="width:64px; height:64px;">
+    `;
 
+    // Timer text overlay
     const timerText = document.createElement('div');
     timerText.style.position = 'absolute';
     timerText.style.bottom = '-20px';
     timerText.style.width = '100%';
     timerText.style.textAlign = 'center';
     timerText.style.fontSize = '14px';
+    button.style.position = 'relative';
     button.appendChild(timerText);
 
-    // ── Function to update button visuals ──
+    // ── Update visuals ──
     function updateButton() {
       if (researchState.researching) {
         button.disabled = true;
-        buttonImg.style.opacity = '0.5';
+        button.style.opacity = '0.5';
         timerText.textContent = `${researchState.remainingTime}s`;
         updateRightPanelTimer(key, researchState.remainingTime);
       } else if (!researchState.completed) {
         button.disabled = false;
-        buttonImg.style.opacity = '0.5';
+        button.style.opacity = '0.5';
         timerText.textContent = `${researchDef.duration}s`;
         removeRightPanelTimer(key);
       } else {
-        // Handle toggleable researches differently
         const toggleable = researchDef.toggleable;
         button.disabled = false;
         if (toggleable) {
-          buttonImg.style.opacity = state[toggleable] ? '1' : '0.5';
+          button.style.opacity = state[toggleable] ? '1' : '0.5';
           timerText.textContent = state[toggleable] ? 'ON' : 'OFF';
         } else {
-          buttonImg.style.opacity = '0.5';
+          button.style.opacity = '0.5';
           timerText.textContent = '✓';
         }
         removeRightPanelTimer(key);
@@ -84,9 +81,16 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
       if (infoLeft) {
         infoLeft.innerHTML = `
           <div style="text-align: center;">
-          <div style="font-size:20px; font-weight:bold; text-decoration:underline;">${researchDef.name}</div>
-          <div style="margin-top:8px; font-size:16px;">${researchDef.description || 'No description yet.'}</div>
-          <div style="margin-top:8px; font-size:14px;">Duration: ${researchDef.duration}s</div>
+            <div style="font-size: 20px; font-weight: bold; text-decoration: underline;">
+              ${researchDef.name}
+            </div>
+            <div style="margin-top: 8px; font-size: 16px;">
+              ${researchDef.description || 'No description yet.'}
+            </div>
+            <div style="margin-top: 8px; font-size: 14px;">
+              Duration: ${researchDef.duration}s
+            </div>
+          </div>
         `;
       }
     });
@@ -104,14 +108,14 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
       updateButton();
     });
 
-    // ── Update visuals every second ──
+    // ── Update loop ──
     setInterval(updateButton, 1000);
     updateButton();
 
     return button;
   }
 
-  // ── Helper: Manage right panel timers ──
+  // ── Right panel: Timer list ──
   function updateRightPanelTimer(key, remainingTime) {
     if (!infoRight) return;
     let timerRow = document.getElementById(`timer-${key}`);
@@ -131,10 +135,10 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
     if (row) row.remove();
   }
 
-  // ── Render all research buttons ──
+  // ── Render all unlocked researches ──
   for (const key in researchData) {
     const btn = createResearchButton(key);
-    if (btn) tabContent.appendChild(btn);
+    if (btn) researchContainer.appendChild(btn);
   }
 
   // ── Cheat button ──
@@ -142,13 +146,15 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
   finishResearchButton.type = 'button';
   finishResearchButton.id = 'finishResearchButton';
   finishResearchButton.textContent = 'Finish Research';
+  finishResearchButton.className = 'kiosk-button'; // ✅ match style
   finishResearchButton.style.width = '120px';
   finishResearchButton.style.height = '40px';
-  finishResearchButton.style.marginLeft = '10px';
+  finishResearchButton.style.fontSize = '14px';
   finishResearchButton.addEventListener('click', finishAllResearchTimers);
-  tabContent.appendChild(finishResearchButton);
-}
 
+  researchContainer.appendChild(finishResearchButton);
+  tabContent.appendChild(researchContainer);
+}
 
 
 //pseudokod
