@@ -56,6 +56,42 @@ export const equipmentData = {
       state.boogie.damageTypes.delete("normal");
       state.boogie.attackPower -= 1;
     }
+  },
+
+  //Secondary Hand
+  ketchup: {
+    name: 'Phoenix Ketchup ',
+    img: 'src/game/Assets/img/equipment/Secondary hand/Secondary hand 1 - ketchup.png',
+    slot: 'secondaryHand',
+    effectDescription: 'Adds heat to the sausage.',
+    itemDescription:'- The Thin Red Line.',
+    toggleable: true,
+    onEquip: (state) => {
+      state.boogie.damageTypes.add("heat");
+    },
+    onUnequip: (state) => {
+      state.boogie.damageTypes.delete("heat");
+    }
+
+  },
+
+  //hattar
+  topphatt: {
+    name: 'Topphatt',
+    img: 'src/game/Assets/img/equipment/Hatt/Hatt 1 - Topphatt.png',
+    slot: 'hatt',
+    effectDescription: 'Covers your ears somewhat from bullshit.',
+    itemDescription:'The top of the crop of hats. Now we are talking!',
+    toggleable: true,
+    onEquip: (state) => {
+      state.boogie.maxHP += 10;
+      state.boogie.currentHP += 10; 
+    },
+    onUnequip: (state) => {
+      state.boogie.maxHP -= 10;
+      state.boogie.currentHP -= 10; 
+    }
+
   }
 };
 

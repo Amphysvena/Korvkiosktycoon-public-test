@@ -195,7 +195,7 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
   const slots = [
     { name: 'Primary Hand', key: 'primaryHand' },
     { name: 'Secondary Hand', key: 'secondaryHand' },
-    { name: 'Hatt', key: 'hat' },
+    { name: 'Hatt', key: 'hatt' },
     { name: 'Korvlåda', key: 'korvBox' }
   ];
 

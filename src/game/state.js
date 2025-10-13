@@ -13,10 +13,14 @@ export const state = {
     //korvlådor
     plasticBox: { unlocked: false, equipped: false },
     fishBox: { unlocked: false, equipped: false},
-    //korv
+    //korv and primary hand
     korv1: { unlocked: false, equipped: false },
     // Track which weapons are allowed to be equipped
     allowedKorvWeapons: [],
+    //Secondary Hand
+    ketchup: {unlocked: false, equipped: false},
+    //hattar
+    topphatt: {unlocked: false, equipped: false},
 
     // Equipped slots
     equippedPrimary: null,

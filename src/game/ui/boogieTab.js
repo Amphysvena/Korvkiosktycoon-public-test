@@ -1,10 +1,10 @@
 import { state } from '../state.js';
 import { boogieEnemies } from '../data/boogieEnemiesforact1.js';
+import { equipmentData } from '../data/equipmentData.js';
 
 export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   tabContent.innerHTML = '';
 
-  // Container for enemies
   const enemyContainer = document.createElement('div');
   enemyContainer.style.display = 'flex';
   enemyContainer.style.flexWrap = 'wrap';
@@ -13,15 +13,15 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
   enemyContainer.style.alignItems = 'flex-start';
   enemyContainer.style.padding = '10px';
 
-  // Loop through all enemies and check unlock condition
   for (const key in boogieEnemies) {
     const enemy = boogieEnemies[key];
 
-    if (!enemy.unlockCondition(state)) continue; // skip locked
+    // Check unlock condition
+    if (!enemy.unlockCondition(state)) continue;
 
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'kiosk-button'; // ✅ reuse styling
+    btn.className = 'kiosk-button';
 
     btn.innerHTML = `
       <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/${enemy.img}" 
@@ -44,15 +44,39 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
         `;
       }
     });
-
     btn.addEventListener('mouseleave', () => {
       if (infoLeft) infoLeft.innerHTML = '';
     });
 
-    // Click placeholder (for future combat)
+    // Click logic: check winCondition
     btn.addEventListener('click', () => {
-      console.log(`Encountered enemy: ${enemy.name}`);
-      // Later: trigger combat or checkbox simulation
+      if (enemy.winCondition(state)) {
+        console.log(`You defeated ${enemy.name}!`);
+
+        // Give drops (unlock equipment)
+        enemy.drops.forEach(dropKey => {
+          if (state.equipment[dropKey] && !state.equipment[dropKey].unlocked) {
+            state.equipment[dropKey].unlocked = true;
+            console.log(`${state.equipment[dropKey].name} unlocked!`);
+          }
+        });
+
+        // Unlock next enemies (if any)
+        if (enemy.victoryUnlocks) {
+          enemy.victoryUnlocks.forEach(nextEnemyKey => {
+            const nextEnemy = boogieEnemies[nextEnemyKey];
+            if (nextEnemy) {
+              // We don’t need to do much here; unlockCondition will handle visibility
+              console.log(`${nextEnemy.name} unlocked!`);
+            }
+          });
+        }
+
+        // Optionally: re-render Boogie tab so new enemies appear
+        renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight });
+      } else {
+        console.log(`You cannot defeat ${enemy.name} yet. Equip the right damage type.`);
+      }
     });
 
     enemyContainer.appendChild(btn);
