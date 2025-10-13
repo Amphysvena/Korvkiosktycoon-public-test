@@ -1,8 +1,9 @@
 //Researchdata defining unlock requirements
 export const researchData = {
   autoFry: {
-  name: "autoFry",
+  name: "AutoFry",
   img: "Research1-Autofry.png",
+  description: "AI-controlled sausage fryer.",
   cost: 10,
   duration: 30,
   effectAmount: 1, 
@@ -16,8 +17,9 @@ export const researchData = {
   },
 
   plasticBox : {
-  name: "plastlåda",
+  name: "Plastlåda",
   img: "Research2-plastlada varmkorv.png",
+  description: "Old laundry-box with several compartments.",
   cost: 100,
   duration: 60,
   criteria: (state) => state.korv >= 100, 
@@ -28,8 +30,9 @@ export const researchData = {
   },
 
   fishBox : {
-  name: "fisklåda",
+  name: "Fisklåda",
   img: "Research3-fisklåda.png",
+  description: "Upgrade the laundry box with a freezing water compartment",
   cost: 750,
   duration: 300,
   criteria: (state) => state.korv >= 750,
@@ -41,7 +44,7 @@ export const researchData = {
   },
 
   condimentsMachine : {
-  name: "condiments machine",
+  name: "Condiments Machine",
   img: "Research4-Condimentmachine.png",
   criteria: (state) => false //placeholder
   }

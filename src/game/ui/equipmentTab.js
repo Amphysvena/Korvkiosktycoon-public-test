@@ -32,13 +32,17 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
   // --- INFO LEFT: show item description on hover ---
 button.addEventListener('mouseenter', () => {
   if (infoLeft) {
-    infoLeft.innerHTML = `<div style="text-align: center;">${equipmentDef.itemDescription || 'No description available'}</div>`;
+    infoLeft.innerHTML = `
+    <div style="font-size:20px; font-weight:bold; text-decoration:underline;">${equipmentDef.name}</div>
+    <div style="text-align: center;">${equipmentDef.itemDescription || 'No description available'}</div>`;
   }
 });
 
 button.addEventListener('mouseleave', () => {
   if (infoLeft) {
-    infoLeft.innerHTML = `<div style="text-align: center;">Hover over an item for information</div>`;
+    infoLeft.innerHTML = `
+    <div style="text-align: center;">Hover over an item for information</div>`;
+    
   }
 });
 
