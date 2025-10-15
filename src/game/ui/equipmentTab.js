@@ -1,6 +1,9 @@
 import { state } from '../state.js';
 import { equipmentData } from '../data/equipmentData.js';
 
+// 🧩 Store the active category globally so it persists between renders
+let activeCategory = null;
+
 // Creates buttons for equipment when they are unlocked
 export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, infoRight) {
   const equipmentState = state.equipment[key];
@@ -21,7 +24,7 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
   buttonImg.style.width = '64px';
   buttonImg.style.height = '64px';
   buttonImg.style.display = 'block';
-  buttonImg.style.transition = 'opacity 0.2s'; 
+  buttonImg.style.transition = 'opacity 0.2s';
   button.appendChild(buttonImg);
 
   // Tooltip
@@ -30,51 +33,48 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
   }
 
   // --- INFO LEFT: show item description on hover ---
-button.addEventListener('mouseenter', () => {
-  if (infoLeft) {
-    infoLeft.innerHTML = `
-    <div style="font-size:20px; font-weight:bold; text-decoration:underline;">${equipmentDef.name}</div>
-    <div style="text-align: center;">${equipmentDef.itemDescription || 'No description available'}</div>`;
-  }
-});
+  button.addEventListener('mouseenter', () => {
+    if (infoLeft) {
+      infoLeft.innerHTML = `
+      <div style="font-size:20px; font-weight:bold; text-decoration:underline;">${equipmentDef.name}</div>
+      <div style="text-align: center;">${equipmentDef.itemDescription || 'No description available'}</div>`;
+    }
+  });
 
-button.addEventListener('mouseleave', () => {
-  if (infoLeft) {
-    infoLeft.innerHTML = `
-    <div style="text-align: center;">Hover over an item for information</div>`;
-    
-  }
-});
+  button.addEventListener('mouseleave', () => {
+    if (infoLeft) {
+      infoLeft.innerHTML = `
+      <div style="text-align: center;">Hover over an item for information</div>`;
+    }
+  });
 
   // --- FUNCTION: update boogie stats (only if infoRight exists) ---
-function updateBoogieStats() {
-  if (!infoRight) return;
-  const b = state.boogie;
+  function updateBoogieStats() {
+    if (!infoRight) return;
+    const b = state.boogie;
 
-  // Convert Set to array and join for display
-  const damageText = b.damageTypes && b.damageTypes.size > 0
-    ? Array.from(b.damageTypes).join(', ')
-    : 'None';
+    const damageText = b.damageTypes && b.damageTypes.size > 0
+      ? Array.from(b.damageTypes).join(', ')
+      : 'None';
 
-  infoRight.innerHTML = `
-  <div style="
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: left;
-    height: 100%;
-    text-align: left;
-  ">
-    <div>HP: ${b.currentHP} / ${b.maxHP}</div>
-    <div>Attack: ${b.attackPower}</div>
-    <div>Defense: ${b.defense}</div>
-    <div>Damage Types: ${damageText}</div>
-    <div>Status Effects: ${b.statusEffects.length > 0 ? b.statusEffects.join(', ') : 'None'}</div>
-  </div>
-`;
-}
+    infoRight.innerHTML = `
+    <div style="
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: left;
+      height: 100%;
+      text-align: left;
+    ">
+      <div>HP: ${b.currentHP} / ${b.maxHP}</div>
+      <div>Attack: ${b.attackPower}</div>
+      <div>Defense: ${b.defense}</div>
+      <div>Damage Types: ${damageText}</div>
+      <div>Status Effects: ${b.statusEffects.length > 0 ? b.statusEffects.join(', ') : 'None'}</div>
+    </div>
+  `;
+  }
 
-  // Initial render of stats
   updateBoogieStats();
 
   // --- Equip/unequip visual updates ---
@@ -100,7 +100,6 @@ function updateBoogieStats() {
 
   // --- CLICK HANDLER ---
   button.addEventListener('click', () => {
-    // Unequip if already equipped
     if (equipmentState.equipped) {
       equipmentState.equipped = false;
       if (equipmentDef.onUnequip) equipmentDef.onUnequip(state);
@@ -127,15 +126,13 @@ function updateBoogieStats() {
 
     // Equip this item
     equipmentState.equipped = true;
-    // --- Unlock skill Throw if equipping korv1 for the first time ---
     if (key === 'korv1' && !state.skills.throw.unlocked) {
       state.skills.throw.unlocked = true;
     }
     if (equipmentDef.onEquip) equipmentDef.onEquip(state);
-    renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight });
-    updateButtonVisual();
-    updateSlotImage();
-    updateBoogieStats();
+
+    // 🧩 Keep current category instead of resetting
+    renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight, categoryOverride: equipmentDef.slot });
   });
 
   return button;
@@ -157,7 +154,7 @@ function renderEquipmentButtons(categoryKey, equipmentButtonContainer, tabConten
 }
 
 // Main Equipment Tab render function
-export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight }) {
+export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight, categoryOverride = null }) {
   mainScreen.innerHTML = '';
   tabContent.innerHTML = '';
 
@@ -236,7 +233,10 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
   });
 
   // --- CATEGORY BUTTONS ---
-  let activeCategory = slots[0].key;
+  // 🧩 Use existing active category if available
+  if (!activeCategory) activeCategory = slots[0].key;
+  if (categoryOverride) activeCategory = categoryOverride;
+
   const categoryContainer = document.createElement('div');
   categoryContainer.style.display = 'flex';
   categoryContainer.style.justifyContent = 'space-around';
@@ -279,6 +279,7 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
   // --- DEFAULT INFO LEFT TEXT ---
   if (infoLeft) infoLeft.innerHTML = 'Select an item for info';
 }
+
 
 
 
