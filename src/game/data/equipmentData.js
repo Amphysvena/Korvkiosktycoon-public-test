@@ -58,13 +58,49 @@ export const equipmentData = {
     }
   },
 
+  korv2: {
+    name: "Kokt korv med bröd, ketchup och senap",
+    img: 'src/game/Assets/img/equipment/Primary Hand/primaryhand 2 - kokt korv med bröd,ketchup,senap.png',
+    slot: "primaryHand",
+    effectDescription: "A sausage with ketchup and mustard on it.",
+    itemDescription: "A lukewarm sausage in mushy bread with ketchup and mustard on it.",
+    toggleable: true, // can be equipped/unequipped
+    onEquip: (state) => {
+      state.boogie.damageTypes.add("normal","heat", "pungent");
+      state.boogie.attackPower += 2; // modify if equipment gives bonus
+    },
+    onUnequip: (state) => {
+      state.boogie.damageTypes.delete("normal","heat", "pungent");
+      state.boogie.attackPower -= 2;
+    }
+  },
+
+  korv3: {
+    name: "Kokt korv med allt",
+    img: 'src/game/Assets/img/equipment/Primary Hand/primaryhand 3 - kokt korv med bröd alla ingredienser.png',
+    slot: "primaryHand",
+    effectDescription: "A sausage with everything on it.",
+    itemDescription: "A lukewarm sausage in mushy bread with everything on it.",
+    toggleable: true, // can be equipped/unequipped
+    onEquip: (state) => {
+      state.boogie.damageTypes.add("normal","heat", "pungent");
+      state.boogie.attackPower += 3; // modify if equipment gives bonus
+      //hp regen +1 per 5
+    },
+    onUnequip: (state) => {
+      state.boogie.damageTypes.delete("normal","heat", "pungent");
+      state.boogie.attackPower -= 3;
+      //remove hp regen +1 per 5
+    }
+  },
+
   //Secondary Hand
   ketchup: {
     name: 'Phoenix Ketchup ',
     img: 'src/game/Assets/img/equipment/Secondary hand/Secondary hand 1 - ketchup.png',
     slot: 'secondaryHand',
     effectDescription: 'Adds heat to the sausage.',
-    itemDescription:'- The Thin Red Line.',
+    itemDescription:'The Thin Red Line.',
     toggleable: true,
     onEquip: (state) => {
       state.boogie.damageTypes.add("heat");
@@ -74,6 +110,40 @@ export const equipmentData = {
     }
 
   },
+
+  senap: {
+    name:'Senap',
+    img: 'src/game/Assets/img/equipment/Secondary hand/Secondary hand 2 - senap.png',
+    slot: 'secondaryHand',
+    effectDescription: 'Adds a pungent taste to the sausage.',
+    itemDescription: 'Castle-grade mustard.',
+    toggleable: true,
+    onEquip: (state) => {
+      state.boogie.damageTypes.add("pungent");
+    },
+    onUnequip: (state) => {
+      state.boogie.damageTypes.delete("pungent");
+    }
+
+
+  },
+
+  bostongurka: {
+    name: 'Phoenix Bostongurka',
+    img: 'src/game/Assets/img/equipment/Secondary hand/Secondary hand 3 - bostongurka.png',
+    slot: 'secondaryHand',
+    effectDescription: 'Adds a revitalizing taste to the sausage.',
+    itemDescription:'Agurken straight outta Boston.',
+    toggleable: true,
+    onEquip: (state) => {
+      //hp regen +1 per 5
+    },
+    onUnequip: (state) => {
+      //remove hp regen +1 per 5
+    }
+  },
+
+
 
   //hattar
   topphatt: {
@@ -90,6 +160,24 @@ export const equipmentData = {
     onUnequip: (state) => {
       state.boogie.maxHP -= 10;
       state.boogie.currentHP -= 10; 
+    }
+
+  },
+
+  pilgrimshatt: {
+    name: 'Pilgrimshatt',
+    img: 'src/game/Assets/img/equipment/Hatt/Hatt 2 - Pilgrimshatt.png',
+    slot: 'hatt',
+    effectDescription: 'Shield yourself from bullshit with your own bullshit.',
+    itemDescription:'In pristine condition, almost as if it blesse by some entity.',
+    toggleable: true,
+    onEquip: (state) => {
+      state.boogie.maxHP += 50;
+      state.boogie.currentHP += 50; 
+    },
+    onUnequip: (state) => {
+      state.boogie.maxHP -= 50;
+      state.boogie.currentHP -= 50; 
     }
 
   }
