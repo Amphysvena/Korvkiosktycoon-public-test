@@ -5,10 +5,20 @@ export const boogieEnemies = {
     name: 'Byråkrat',
     img: 'boogie 1 - byråkrat.png',
     description: "En byråkrat kommer med sitt prat.",
-    unlockCondition: (state) => state.equipment.korv1?.equipped === true, // ✅ unlock when korv1 is equipped
-    winCondition: (state) => state.boogie.damageTypes.has('normal'),      // placeholder
+    unlockCondition: (state) => state.equipment.korv1?.equipped === true, 
+    winCondition: (state) => state.boogie.damageTypes.has('normal'),      
     drops: ['ketchup', 'topphatt'],
     victoryUnlocks: ['ärkekrat']
+  },
+
+  ärkekrat: {
+    name: 'Ärkekrat',
+    img: 'boogie 2 - ärkekrat.png',
+    description: "Han kom gående på gaten.",
+    unlockCondition: (state) => state.boogie.defeatedEnemies.has('byråkrat'), // ✅ check victory
+    winCondition: (state) => state.boogie.damageTypes.has('heat') && state.boogie.damageTypes.has('cold'),
+    drops: ['senap', 'recipe1'],
+    victoryUnlocks: []
   },
   // ...other enemies
 };

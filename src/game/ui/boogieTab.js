@@ -50,34 +50,37 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
 
     // Click logic: check winCondition
     btn.addEventListener('click', () => {
-      if (enemy.winCondition(state)) {
-        console.log(`You defeated ${enemy.name}!`);
+  if (enemy.winCondition(state)) {
+    console.log(`You defeated ${enemy.name}!`);
 
-        // Give drops (unlock equipment)
-        enemy.drops.forEach(dropKey => {
-          if (state.equipment[dropKey] && !state.equipment[dropKey].unlocked) {
-            state.equipment[dropKey].unlocked = true;
-            console.log(`${state.equipment[dropKey].name} unlocked!`);
-          }
-        });
+    // ✅ Record the victory
+    state.boogie.defeatedEnemies.add(key);
 
-        // Unlock next enemies (if any)
-        if (enemy.victoryUnlocks) {
-          enemy.victoryUnlocks.forEach(nextEnemyKey => {
-            const nextEnemy = boogieEnemies[nextEnemyKey];
-            if (nextEnemy) {
-              // We don’t need to do much here; unlockCondition will handle visibility
-              console.log(`${nextEnemy.name} unlocked!`);
-            }
-          });
-        }
-
-        // Optionally: re-render Boogie tab so new enemies appear
-        renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight });
-      } else {
-        console.log(`You cannot defeat ${enemy.name} yet. Equip the right damage type.`);
+    // ✅ Give drops (unlock equipment)
+    enemy.drops.forEach(dropKey => {
+      if (state.equipment[dropKey] && !state.equipment[dropKey].unlocked) {
+        state.equipment[dropKey].unlocked = true;
+        console.log(`${dropKey} unlocked!`);
       }
     });
+
+    // ✅ Optional log or animation for unlocked enemies
+    if (enemy.victoryUnlocks) {
+      enemy.victoryUnlocks.forEach(nextEnemyKey => {
+        const nextEnemy = boogieEnemies[nextEnemyKey];
+        if (nextEnemy) {
+          console.log(`New enemy unlocked: ${nextEnemy.name}`);
+        }
+      });
+    }
+
+    // ✅ Refresh tab to show newly unlocked enemies
+    renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight });
+  } else {
+    console.log(`You cannot defeat ${enemy.name} yet. Equip the right damage type.`);
+  }
+});
+
 
     enemyContainer.appendChild(btn);
   }

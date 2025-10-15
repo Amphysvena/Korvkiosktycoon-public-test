@@ -39,7 +39,8 @@ export const state = {
     damageTypes: new Set (),
     attackPower: 0,
     defense: 0,
-    statusEffects: [] // e.g., poison, burn, freeze
+    statusEffects: [], // e.g., poison, burn, freeze
+    defeatedEnemies: new Set() 
   },
 
   skills: {
