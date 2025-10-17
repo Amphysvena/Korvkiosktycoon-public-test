@@ -1,5 +1,6 @@
 import Decimal from 'break_infinity.js';
 import { researchData } from './data/researchData.js';
+import { recipeData } from './data/recipeData.js';
 
 export const state = {
   korv: 0,
@@ -47,6 +48,10 @@ export const state = {
     throw: { unlocked: false, level: 1 },
   },
 
+  recipes: {
+
+  },
+
 
 
   autoFryActive: false // toggleable after research is done
@@ -61,6 +66,14 @@ for (const key in researchData) {
     completed: false
   };
 }
+
+for (const key in recipeData) {
+  state.recipes[key] = {
+    unlocked: false,
+    completed: false
+  };
+}
+
 
 //pseudokod
 

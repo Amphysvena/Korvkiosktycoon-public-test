@@ -58,11 +58,18 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
 
     // ✅ Give drops (unlock equipment)
     enemy.drops.forEach(dropKey => {
-      if (state.equipment[dropKey] && !state.equipment[dropKey].unlocked) {
-        state.equipment[dropKey].unlocked = true;
-        console.log(`${dropKey} unlocked!`);
-      }
-    });
+  // ✅ Check if it’s equipment
+  if (state.equipment[dropKey] && !state.equipment[dropKey].unlocked) {
+    state.equipment[dropKey].unlocked = true;
+    console.log(`${dropKey} unlocked!`);
+  }
+
+  // ✅ Check if it’s a recipe
+  else if (state.recipes[dropKey] && !state.recipes[dropKey].unlocked) {
+    state.recipes[dropKey].unlocked = true;
+    console.log(`${dropKey} recipe unlocked!`);
+  }
+});
 
     // ✅ Optional log or animation for unlocked enemies
     if (enemy.victoryUnlocks) {
