@@ -93,12 +93,16 @@ export const equipmentData = {
     unlocked: false,
     equipped: false,
     onEquip: (state) => {
-      state.boogie.damageTypes.add("normal","heat", "pungent");
+      state.boogie.damageTypes.add("normal");
+      state.boogie.damageTypes.add("heat");
+      state.boogie.damageTypes.add("pungent");
       state.boogie.attackPower += 3; // modify if equipment gives bonus
       //hp regen +1 per 5
     },
     onUnequip: (state) => {
-      state.boogie.damageTypes.delete("normal","heat", "pungent");
+      state.boogie.damageTypes.delete("normal");
+      state.boogie.damageTypes.delete("heat");
+      state.boogie.damageTypes.delete("pungent");
       state.boogie.attackPower -= 3;
       //remove hp regen +1 per 5
     }

@@ -1,4 +1,4 @@
-import { handlekoktKorvClick,handleKorv2Click, handleCheatKorvClick } from '../engine/kioskEngine.js';
+import { handlekoktKorvClick,handleKorv2Click,handleKorv3Click, handleCheatKorvClick } from '../engine/kioskEngine.js';
 import { state } from '../state.js';
 import { kioskData } from '../data/kioskData.js';
 import { researchData } from '../data/researchData.js'; 
@@ -79,6 +79,7 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
 
     if (key === 'korv1') btn.addEventListener('click', handlekoktKorvClick);
     if (key === 'korv2') btn.addEventListener('click', handleKorv2Click);
+    if (key === 'korv3') btn.addEventListener('click', handleKorv3Click);
     if (key === 'fuskkorv') btn.addEventListener('click', handleCheatKorvClick);
 
     // Hover info

@@ -123,15 +123,26 @@ export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }
           console.log('Korv2 unlocked via Recipe 1!');
         }
 
-        // (optional) Also unlock korv2 in kiosk tab if it uses a separate flag
+        // Optional: also unlock korv2 in kiosk tab
         if (state.kiosk && state.kiosk.korv2) {
           state.kiosk.korv2.unlocked = true;
           console.log('Korv2 kiosk item unlocked!');
         }
       }
 
-      // Later you can add similar logic for recipe2, etc.
-      // if (key === 'recipe2') { ... }
+      // 🆕 New: unlock korv3 after Recipe 2
+      if (key === 'recipe2') {
+        if (!state.equipment.korv3.unlocked) {
+          state.equipment.korv3.unlocked = true;
+          console.log('Korv3 unlocked via Recipe 2!');
+        }
+
+        // Optional: also unlock in kiosk if it exists there
+        if (state.kiosk && state.kiosk.korv3) {
+          state.kiosk.korv3.unlocked = true;
+          console.log('Korv3 kiosk item unlocked!');
+        }
+      }
     }
   }, 1000);
 }

@@ -12,6 +12,8 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
   if (!equipmentState || !equipmentState.unlocked) return null;
 
   const button = document.createElement('button');
+  button.type = 'button';
+  button.dataset.equipmentKey = key; // safe handle to find this button later
   button.style.width = '64px';
   button.style.height = '64px';
   button.style.position = 'relative';
@@ -36,15 +38,15 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
   button.addEventListener('mouseenter', () => {
     if (infoLeft) {
       infoLeft.innerHTML = `
-      <div style="font-size:20px; font-weight:bold; text-decoration:underline;">${equipmentDef.name}</div>
-      <div style="text-align: center;">${equipmentDef.itemDescription || 'No description available'}</div>`;
+        <div style="font-size:20px; font-weight:bold; text-decoration:underline;">${equipmentDef.name}</div>
+        <div style="text-align: center;">${equipmentDef.itemDescription || 'No description available'}</div>
+      `;
     }
   });
 
   button.addEventListener('mouseleave', () => {
     if (infoLeft) {
-      infoLeft.innerHTML = `
-      <div style="text-align: center;">Hover over an item for information</div>`;
+      infoLeft.innerHTML = `<div style="text-align: center;">Hover over an item for information</div>`;
     }
   });
 
@@ -58,24 +60,22 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
       : 'None';
 
     infoRight.innerHTML = `
-    <div style="
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: left;
-      height: 100%;
-      text-align: left;
-    ">
-      <div>HP: ${b.currentHP} / ${b.maxHP}</div>
-      <div>Attack: ${b.attackPower}</div>
-      <div>Defense: ${b.defense}</div>
-      <div>Damage Types: ${damageText}</div>
-      <div>Status Effects: ${b.statusEffects.length > 0 ? b.statusEffects.join(', ') : 'None'}</div>
-    </div>
-  `;
+      <div style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        height: 100%;
+        text-align: left;
+      ">
+        <div>HP: ${b.currentHP} / ${b.maxHP}</div>
+        <div>Attack: ${b.attackPower}</div>
+        <div>Defense: ${b.defense}</div>
+        <div>Damage Types: ${damageText}</div>
+        <div>Status Effects: ${b.statusEffects.length > 0 ? b.statusEffects.join(', ') : 'None'}</div>
+      </div>
+    `;
   }
-
-  updateBoogieStats();
 
   // --- Equip/unequip visual updates ---
   function updateButtonVisual() {
@@ -95,14 +95,19 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
     }
   }
 
+  // initial visuals
   updateButtonVisual();
   updateSlotImage();
+  updateBoogieStats();
 
   // --- CLICK HANDLER ---
   button.addEventListener('click', () => {
+    // If currently equipped -> unequip
     if (equipmentState.equipped) {
       equipmentState.equipped = false;
       if (equipmentDef.onUnequip) equipmentDef.onUnequip(state);
+
+      // update visuals for this button + slot + boogie stats
       updateButtonVisual();
       updateSlotImage();
       updateBoogieStats();
@@ -116,11 +121,17 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
       if (itemState.equipped && equipmentData[k].slot === equipmentDef.slot) {
         itemState.equipped = false;
         if (equipmentData[k].onUnequip) equipmentData[k].onUnequip(state);
+
+        // reset the visual on the corresponding slot
         const otherSlotImg = document.querySelector(`#slot-${equipmentData[k].slot} img`);
         if (otherSlotImg) {
           otherSlotImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`;
           otherSlotImg.style.opacity = '0.5';
         }
+
+        // update the unequipped button visual if it's present in DOM
+        const unequippedButton = document.querySelector(`button[data-equipment-key="${k}"] img`);
+        if (unequippedButton) unequippedButton.style.opacity = '0.4';
       }
     }
 
@@ -131,8 +142,10 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
     }
     if (equipmentDef.onEquip) equipmentDef.onEquip(state);
 
-    // 🧩 Keep current category instead of resetting
-    renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight, categoryOverride: equipmentDef.slot });
+    // update visuals (current button, slot, and boogie stats)
+    updateButtonVisual();
+    updateSlotImage();
+    updateBoogieStats();
   });
 
   return button;
@@ -155,6 +168,7 @@ function renderEquipmentButtons(categoryKey, equipmentButtonContainer, tabConten
 
 // Main Equipment Tab render function
 export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight, categoryOverride = null }) {
+  // clear screens
   mainScreen.innerHTML = '';
   tabContent.innerHTML = '';
 
@@ -217,7 +231,7 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
     img.style.borderRadius = '8px';
 
     let equippedItem = Object.keys(state.equipment).find(
-      key => state.equipment[key]?.equipped && equipmentData[key]?.slot === slot.key
+      k => state.equipment[k]?.equipped && equipmentData[k]?.slot === slot.key
     );
 
     if (equippedItem) {
@@ -233,7 +247,6 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
   });
 
   // --- CATEGORY BUTTONS ---
-  // 🧩 Use existing active category if available
   if (!activeCategory) activeCategory = slots[0].key;
   if (categoryOverride) activeCategory = categoryOverride;
 
@@ -253,6 +266,7 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
 
   slots.forEach(slot => {
     const btn = document.createElement('button');
+    btn.type = 'button';
     btn.textContent = slot.name;
     btn.style.flex = '1';
     btn.style.margin = '0 5px';
@@ -276,9 +290,9 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
   // --- INITIAL RENDER ---
   renderEquipmentButtons(activeCategory, equipmentButtonContainer, tabContent, mainScreen, infoLeft, infoRight);
 
-  // --- DEFAULT INFO LEFT TEXT ---
   if (infoLeft) infoLeft.innerHTML = 'Select an item for info';
 }
+
 
 
 

@@ -32,6 +32,17 @@ export function handleKorv2Click() {
   }
 }
 
+export function handleKorv3Click() {
+  if (state.korv === undefined) state.korv = 0; // safety check
+
+  if (state.korv < state.korvtak) {
+    state.korv += 50;
+    updateKorvCounter(state.korv);
+  } else {
+    console.log("Korvtak reached! No more korv can be added.");
+  }
+}
+
 //cheatkorvbutton logic for testing. 
 export function handleCheatKorvClick() {
   state.korv += 1000;
