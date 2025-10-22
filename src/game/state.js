@@ -1,6 +1,7 @@
 import Decimal from 'break_infinity.js';
 import { researchData } from './data/researchData.js';
 import { recipeData } from './data/recipeData.js';
+import { buildingData } from './data/buildingData.js';
 
 export const state = {
   korv: 0,
@@ -52,6 +53,9 @@ export const state = {
 
   },
 
+  buildings: {
+
+  },
 
 
   autoFryActive: false // toggleable after research is done
@@ -72,6 +76,15 @@ for (const key in recipeData) {
     unlocked: false,
     crafting: false,
     remainingTime: 0,
+    completed: false
+  };
+}
+
+for (const key in buildingData) {
+  state.buildings[key] = {
+    unlocked: false,
+    constructing: false,
+    remainingTime: buildingData[key].duration,
     completed: false
   };
 }

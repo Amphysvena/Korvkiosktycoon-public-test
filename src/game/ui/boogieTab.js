@@ -57,7 +57,7 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
         // ✅ Record victory
         state.boogie.defeatedEnemies.add(key);
 
-        // ✅ Give drops (unlock equipment or recipes)
+        // ✅ Give drops (unlock equipment or recipes, building permissions)
         enemy.drops.forEach(dropKey => {
           if (state.equipment[dropKey] && !state.equipment[dropKey].unlocked) {
             state.equipment[dropKey].unlocked = true;
@@ -66,6 +66,11 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
             state.recipes[dropKey].unlocked = true;
             console.log(`${dropKey} recipe unlocked!`);
           }
+        // ✅ Check if it’s a building permission
+            else if (state.buildings[dropKey] && !state.buildings[dropKey].unlocked) {
+            state.buildings[dropKey].unlocked = true;
+            console.log(`${dropKey} building unlocked!`);
+}
         });
 
         // ✅ Log new enemies unlocked
