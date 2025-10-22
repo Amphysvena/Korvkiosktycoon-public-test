@@ -70,6 +70,8 @@ for (const key in researchData) {
 for (const key in recipeData) {
   state.recipes[key] = {
     unlocked: false,
+    crafting: false,
+    remainingTime: 0,
     completed: false
   };
 }

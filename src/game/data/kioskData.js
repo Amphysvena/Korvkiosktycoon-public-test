@@ -6,6 +6,12 @@ export const kioskData = {
       img: "src/game/Assets/img/equipment/Korvknappar/korv1.png"
     },
 
+     korv2: {
+    name: 'Cooked hot dog with ketchup and mustard',
+    description: 'This one has taste!',
+    img: 'src/game/Assets/img/equipment/Korvknappar/korv2.png'
+  },
+
     fuskkorv: {
         name: 'The one doG',
         description: 'The Gods use this to test the limits of their Realm.',

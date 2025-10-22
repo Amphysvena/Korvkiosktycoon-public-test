@@ -48,6 +48,8 @@ export const equipmentData = {
     effectDescription: "A basic sausage with nothing on it.",
     itemDescription: "A lukewarm sausage in mushy bread. No condiments.",
     toggleable: true, // can be equipped/unequipped
+    unlocked: false,
+    equipped: false,
     onEquip: (state) => {
       state.boogie.damageTypes.add("normal");
       state.boogie.attackPower += 1; // modify if equipment gives bonus
@@ -65,12 +67,18 @@ export const equipmentData = {
     effectDescription: "A sausage with ketchup and mustard on it.",
     itemDescription: "A lukewarm sausage in mushy bread with ketchup and mustard on it.",
     toggleable: true, // can be equipped/unequipped
+    unlocked: false,
+    equipped: false,
     onEquip: (state) => {
-      state.boogie.damageTypes.add("normal","heat", "pungent");
+      state.boogie.damageTypes.add("normal");
+      state.boogie.damageTypes.add("heat");
+      state.boogie.damageTypes.add("pungent");
       state.boogie.attackPower += 2; // modify if equipment gives bonus
     },
     onUnequip: (state) => {
-      state.boogie.damageTypes.delete("normal","heat", "pungent");
+      state.boogie.damageTypes.delete("normal");
+      state.boogie.damageTypes.delete("heat");
+      state.boogie.damageTypes.delete("pungent");
       state.boogie.attackPower -= 2;
     }
   },
@@ -82,6 +90,8 @@ export const equipmentData = {
     effectDescription: "A sausage with everything on it.",
     itemDescription: "A lukewarm sausage in mushy bread with everything on it.",
     toggleable: true, // can be equipped/unequipped
+    unlocked: false,
+    equipped: false,
     onEquip: (state) => {
       state.boogie.damageTypes.add("normal","heat", "pungent");
       state.boogie.attackPower += 3; // modify if equipment gives bonus

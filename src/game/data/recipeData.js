@@ -10,7 +10,7 @@ export const recipeData = {
         description: 'Esoteric knowledge concerning ancient sausage techniques. It seems to be over 400 years old.',
         img: 'src/game/Assets/img/recept/recipe-frame-0-.png',
         cost: 750,
-        duration: 1, //60, ändra tillbaka senare
-        
+        duration: 60, //60, ändra tillbaka senare
+                
     }
-}
+};

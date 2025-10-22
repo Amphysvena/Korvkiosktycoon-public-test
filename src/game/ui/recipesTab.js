@@ -5,7 +5,7 @@ export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }
   // ── Setup main background image ──
   mainScreen.innerHTML = `
     <div style="display:flex; justify-content:center; align-items:center; height:100%;">
-      <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/recept/recipesmainscreen.gif"
+      <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/recept/recipesmainscreen.png"
            style="max-height:auto; max-width:auto;">
     </div>
   `;
@@ -101,22 +101,41 @@ export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }
 
     // ── Start crafting ──
     function startRecipeCraft(key) {
-      recipeState.crafting = true;
-      recipeState.remainingTime = recipeDef.duration;
+  recipeState.crafting = true;
+  recipeState.remainingTime = recipeDef.duration;
 
-      const timer = setInterval(() => {
-        recipeState.remainingTime--;
-        updateButton();
+  const timer = setInterval(() => {
+    recipeState.remainingTime--;
+    updateButton();
 
-        if (recipeState.remainingTime <= 0) {
-          clearInterval(timer);
-          recipeState.crafting = false;
-          recipeState.completed = true;
-          updateButton();
-          console.log(`${key} completed!`);
+    if (recipeState.remainingTime <= 0) {
+      clearInterval(timer);
+      recipeState.crafting = false;
+      recipeState.completed = true;
+      updateButton();
+      console.log(`${key} completed!`);
+
+      // ── Unlock rewards when crafting completes ──
+      if (key === 'recipe1') {
+        // Unlock korv2 as equipment
+        if (!state.equipment.korv2.unlocked) {
+          state.equipment.korv2.unlocked = true;
+          console.log('Korv2 unlocked via Recipe 1!');
         }
-      }, 1000);
+
+        // (optional) Also unlock korv2 in kiosk tab if it uses a separate flag
+        if (state.kiosk && state.kiosk.korv2) {
+          state.kiosk.korv2.unlocked = true;
+          console.log('Korv2 kiosk item unlocked!');
+        }
+      }
+
+      // Later you can add similar logic for recipe2, etc.
+      // if (key === 'recipe2') { ... }
     }
+  }, 1000);
+}
+
 
     // ── Right panel timer display ──
     function updateRightPanelTimer(key, remainingTime) {

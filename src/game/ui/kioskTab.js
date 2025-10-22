@@ -1,4 +1,4 @@
-import { handlekoktKorvClick, handleCheatKorvClick } from '../engine/kioskEngine.js';
+import { handlekoktKorvClick,handleKorv2Click, handleCheatKorvClick } from '../engine/kioskEngine.js';
 import { state } from '../state.js';
 import { kioskData } from '../data/kioskData.js';
 import { researchData } from '../data/researchData.js'; 
@@ -60,7 +60,15 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
   kioskContainer.id = 'kiosk-container';
 
   for (const key in kioskData) {
-    const item = kioskData[key];
+  const item = kioskData[key];
+
+  // Only show if it's unlocked or always available
+  if (
+    (key === 'korv1' || 
+     key === 'fuskkorv') ||
+    (key === 'korv2' && state.recipes.recipe1?.completed) ||
+    (key === 'korv3' && state.recipes.recipe2?.completed)
+  ) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'kiosk-button';
@@ -70,13 +78,15 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
     `;
 
     if (key === 'korv1') btn.addEventListener('click', handlekoktKorvClick);
+    if (key === 'korv2') btn.addEventListener('click', handleKorv2Click);
     if (key === 'fuskkorv') btn.addEventListener('click', handleCheatKorvClick);
 
+    // Hover info
     btn.addEventListener('mouseenter', () => {
       if (infoLeft) {
         infoLeft.innerHTML = `
         <div style="text-align: center;">
-          <div style="font-size: 20px; font-weight: bold; text-decoration: underline; color: black; ">
+          <div style="font-size: 20px; font-weight: bold; text-decoration: underline; color: black;">
             ${item.name}
           </div>
           <div style="margin-top: 8px; font-size: 16px;">
@@ -91,6 +101,8 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
 
     kioskContainer.appendChild(btn);
   }
+}
+
 
   tabContent.appendChild(kioskContainer);
 

@@ -1,8 +1,8 @@
 import { state } from '../state.js';
 import { boogieEnemies } from '../data/boogieEnemiesforact1.js';
-import { equipmentData } from '../data/equipmentData.js';
 
 export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight }) {
+  // Clear previous content
   tabContent.innerHTML = '';
 
   const enemyContainer = document.createElement('div');
@@ -16,20 +16,21 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
   for (const key in boogieEnemies) {
     const enemy = boogieEnemies[key];
 
-    // Check unlock condition
+    // Only show if unlocked
     if (!enemy.unlockCondition(state)) continue;
 
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'kiosk-button';
 
+    // ✅ Always take image directly from data file
     btn.innerHTML = `
       <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/${enemy.img}" 
            alt="${enemy.name}" 
            style="width:64px; height:64px;">
     `;
 
-    // Hover info
+    // Hover info (left panel)
     btn.addEventListener('mouseenter', () => {
       if (infoLeft) {
         infoLeft.innerHTML = `
@@ -50,50 +51,44 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
 
     // Click logic: check winCondition
     btn.addEventListener('click', () => {
-  if (enemy.winCondition(state)) {
-    console.log(`You defeated ${enemy.name}!`);
+      if (enemy.winCondition(state)) {
+        console.log(`You defeated ${enemy.name}!`);
 
-    // ✅ Record the victory
-    state.boogie.defeatedEnemies.add(key);
+        // ✅ Record victory
+        state.boogie.defeatedEnemies.add(key);
 
-    // ✅ Give drops (unlock equipment)
-    enemy.drops.forEach(dropKey => {
-  // ✅ Check if it’s equipment
-  if (state.equipment[dropKey] && !state.equipment[dropKey].unlocked) {
-    state.equipment[dropKey].unlocked = true;
-    console.log(`${dropKey} unlocked!`);
-  }
+        // ✅ Give drops (unlock equipment or recipes)
+        enemy.drops.forEach(dropKey => {
+          if (state.equipment[dropKey] && !state.equipment[dropKey].unlocked) {
+            state.equipment[dropKey].unlocked = true;
+            console.log(`${dropKey} unlocked!`);
+          } else if (state.recipes[dropKey] && !state.recipes[dropKey].unlocked) {
+            state.recipes[dropKey].unlocked = true;
+            console.log(`${dropKey} recipe unlocked!`);
+          }
+        });
 
-  // ✅ Check if it’s a recipe
-  else if (state.recipes[dropKey] && !state.recipes[dropKey].unlocked) {
-    state.recipes[dropKey].unlocked = true;
-    console.log(`${dropKey} recipe unlocked!`);
-  }
-});
-
-    // ✅ Optional log or animation for unlocked enemies
-    if (enemy.victoryUnlocks) {
-      enemy.victoryUnlocks.forEach(nextEnemyKey => {
-        const nextEnemy = boogieEnemies[nextEnemyKey];
-        if (nextEnemy) {
-          console.log(`New enemy unlocked: ${nextEnemy.name}`);
+        // ✅ Log new enemies unlocked
+        if (enemy.victoryUnlocks) {
+          enemy.victoryUnlocks.forEach(nextEnemyKey => {
+            const nextEnemy = boogieEnemies[nextEnemyKey];
+            if (nextEnemy) console.log(`New enemy unlocked: ${nextEnemy.name}`);
+          });
         }
-      });
-    }
 
-    // ✅ Refresh tab to show newly unlocked enemies
-    renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight });
-  } else {
-    console.log(`You cannot defeat ${enemy.name} yet. Equip the right damage type.`);
-  }
-});
-
+        // ✅ Refresh tab to show newly unlocked enemies
+        renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight });
+      } else {
+        console.log(`You cannot defeat ${enemy.name} yet. Equip the right damage type.`);
+      }
+    });
 
     enemyContainer.appendChild(btn);
   }
 
   tabContent.appendChild(enemyContainer);
 }
+
 
 
 //pseudokod
