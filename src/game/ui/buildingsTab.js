@@ -1,11 +1,12 @@
 import { state } from '../state.js';
 import { buildingData } from '../data/buildingData.js';
+import { startBuildingConstruction } from '../engine/buildingsEngine.js'; // ✅ new shared logic
 
 export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   // ── Setup main background image ──
   mainScreen.innerHTML = `
     <div style="display:flex; justify-content:center; align-items:center; height:100%;">
-      <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/buildings/buildingmainscreen.png"
+      <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/building/buildingmainscreen.png"
            style="max-height:auto; max-width:auto;">
     </div>
   `;
@@ -25,7 +26,6 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
     const buildingDef = buildingData[key];
     if (!buildingState.unlocked) return null;
 
-    // Fallback for count (if not defined yet)
     if (buildingState.count === undefined) buildingState.count = 0;
 
     const button = document.createElement('button');
@@ -36,7 +36,7 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
 
     // Image
     button.innerHTML = `
-      <img src="${KorvkioskData.pluginUrl}${buildingDef.img || 'src/game/Assets/img/buildings/default.png'}" 
+      <img src="${KorvkioskData.pluginUrl}${buildingDef.img || 'src/game/Assets/img/building/default.png'}" 
            alt="${buildingDef.name}" 
            style="width:64px; height:64px;">
     `;
@@ -50,7 +50,7 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
     timerText.style.fontSize = '14px';
     button.appendChild(timerText);
 
-    // ── Update visuals ──
+    // ── Visual update ──
     function updateButton() {
       if (buildingState.constructing) {
         button.disabled = true;
@@ -67,23 +67,22 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
 
     // ── Hover info (left panel) ──
     button.addEventListener('mouseenter', () => {
-      if (infoLeft) {
-        infoLeft.innerHTML = `
-          <div style="text-align:center;">
-            <div style="font-size:20px; font-weight:bold; text-decoration:underline;">
-              ${buildingDef.name}
-            </div>
-            <div style="margin-top:8px; font-size:16px;">
-              ${buildingDef.itemDescription || 'No description yet.'}
-            </div>
-            <div style="margin-top:8px; font-size:14px;">
-              Cost: ${buildingDef.cost} korv<br>
-              Duration: ${buildingDef.duration}s<br>
-              Built: ${buildingState.count}
-            </div>
+      if (!infoLeft) return;
+      infoLeft.innerHTML = `
+        <div style="text-align:center;">
+          <div style="font-size:20px; font-weight:bold; text-decoration:underline;">
+            ${buildingDef.name}
           </div>
-        `;
-      }
+          <div style="margin-top:8px; font-size:16px;">
+            ${buildingDef.itemDescription || 'No description yet.'}
+          </div>
+          <div style="margin-top:8px; font-size:14px;">
+            Cost: ${buildingDef.cost} korv<br>
+            Duration: ${buildingDef.duration}s<br>
+            Built: ${buildingState.count}
+          </div>
+        </div>
+      `;
     });
     button.addEventListener('mouseleave', () => {
       if (infoLeft) infoLeft.innerHTML = '';
@@ -93,35 +92,10 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
     button.addEventListener('click', () => {
       if (state.korv >= buildingDef.cost && !buildingState.constructing) {
         state.korv -= buildingDef.cost;
-        startConstruction(key);
+        startBuildingConstruction(key, updateButton, updateMainScreenCount); // ✅ use shared logic
         updateButton();
       }
     });
-
-    // ── Start construction ──
-    function startConstruction(key) {
-      buildingState.constructing = true;
-      buildingState.remainingTime = buildingDef.duration;
-
-      const timer = setInterval(() => {
-        buildingState.remainingTime--;
-        updateButton();
-
-        if (buildingState.remainingTime <= 0) {
-          clearInterval(timer);
-          buildingState.constructing = false;
-          buildingState.count++;
-          updateButton();
-
-          // Apply onBuild effects (e.g. increase korvtak)
-          if (buildingDef.onBuild) buildingDef.onBuild(state);
-
-          console.log(`${key} constructed! Count: ${buildingState.count}`);
-
-          updateMainScreenCount();
-        }
-      }, 1000);
-    }
 
     // ── Right panel timer display ──
     function updateRightPanelTimer(key, remainingTime) {
@@ -134,8 +108,7 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
         timerRow.style.marginTop = '4px';
         infoRight.appendChild(timerRow);
       }
-      const name = buildingDef.name || key;
-      timerRow.textContent = `${name}: ${remainingTime}s`;
+      timerRow.textContent = `${buildingDef.name}: ${remainingTime}s`;
     }
 
     function removeRightPanelTimer(key) {
@@ -169,7 +142,5 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
     `;
   }
 
-  // Initial render
   updateMainScreenCount();
 }
-

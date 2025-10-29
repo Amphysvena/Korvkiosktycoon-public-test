@@ -2,6 +2,8 @@
 import { state } from './state.js';
 import { updateKorvCounter } from './ui.js';
 import { resumeActiveResearch } from './engine/researchEngine.js';
+import { resumeActiveBuildings } from './engine/buildingsEngine.js';
+
 
 /**
  * JSON replacer to serialize Sets with a tag so we can restore them later.
@@ -99,8 +101,10 @@ export function importSave(file) {
       // Update UI elements that depend on state
       if (state.korv !== undefined) updateKorvCounter(state.korv);
 
-      // 🔹 Resume any research that was active
+      // 🔹 Resume any research or building that was active
       resumeActiveResearch();
+
+      resumeActiveBuildings();
 
       console.log("Save loaded and merged into current state:", state);
     } catch (err) {
