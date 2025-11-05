@@ -1,7 +1,25 @@
+// boogieTab.js
 import { state } from '../state.js';
 import { boogieEnemies } from '../data/boogieEnemiesforact1.js';
+import { registerUpdateCallback, unregisterUpdateCallback } from '../ui.js';
+
+let _updateCallback = null;
+let activeRenderCleanup = null; // local reference to cleanup for re-renders
 
 export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight }) {
+  // Ensure defeatedEnemies is a Set (defensive: savefiles might serialize it differently)
+  if (state.boogie) {
+    if (Array.isArray(state.boogie.defeatedEnemies)) {
+      state.boogie.defeatedEnemies = new Set(state.boogie.defeatedEnemies);
+    } else if (state.boogie.defeatedEnemies && state.boogie.defeatedEnemies.__type === 'Set') {
+      state.boogie.defeatedEnemies = new Set(state.boogie.defeatedEnemies.values || []);
+    } else if (!(state.boogie.defeatedEnemies instanceof Set)) {
+      state.boogie.defeatedEnemies = new Set();
+    }
+  } else {
+    state.boogie = { defeatedEnemies: new Set(), damageTypes: new Set(), statusEffects: [], maxHP: 3, currentHP: 3, attackPower: 0, defense: 0 };
+  }
+
   // Clear previous content
   tabContent.innerHTML = '';
 
@@ -13,24 +31,34 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
   enemyContainer.style.alignItems = 'flex-start';
   enemyContainer.style.padding = '10px';
 
+  // Local helper to re-render this tab safely (unregister previous callback first)
+  function reRender() {
+    if (typeof activeRenderCleanup === 'function') {
+      activeRenderCleanup();
+      activeRenderCleanup = null;
+    }
+    renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight });
+  }
+
   for (const key in boogieEnemies) {
     const enemy = boogieEnemies[key];
-
-    // Only show if unlocked
-    if (!enemy.unlockCondition(state)) continue;
+    try {
+      if (!enemy.unlockCondition(state)) continue;
+    } catch (err) {
+      console.error(`Error evaluating unlockCondition for ${key}:`, err);
+      continue;
+    }
 
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'kiosk-button';
 
-    // ✅ Always take image directly from data file
     btn.innerHTML = `
       <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/${enemy.img}" 
            alt="${enemy.name}" 
            style="width:64px; height:64px;">
     `;
 
-    // Hover info (left panel)
     btn.addEventListener('mouseenter', () => {
       if (infoLeft) {
         infoLeft.innerHTML = `
@@ -49,31 +77,36 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
       if (infoLeft) infoLeft.innerHTML = '';
     });
 
-    // Click logic: check winCondition
     btn.addEventListener('click', () => {
-      if (enemy.winCondition(state)) {
+      let canWin = false;
+      try {
+        canWin = !!enemy.winCondition(state);
+      } catch (err) {
+        console.error(`Error evaluating winCondition for ${key}:`, err);
+        canWin = false;
+      }
+
+      if (canWin) {
         console.log(`You defeated ${enemy.name}!`);
 
-        // ✅ Record victory
+        if (!state.boogie.defeatedEnemies || !(state.boogie.defeatedEnemies instanceof Set)) {
+          state.boogie.defeatedEnemies = new Set(state.boogie.defeatedEnemies || []);
+        }
         state.boogie.defeatedEnemies.add(key);
 
-        // ✅ Give drops (unlock equipment or recipes, building permissions)
-        enemy.drops.forEach(dropKey => {
-          if (state.equipment[dropKey] && !state.equipment[dropKey].unlocked) {
+        (enemy.drops || []).forEach(dropKey => {
+          if (state.equipment?.[dropKey] && !state.equipment[dropKey].unlocked) {
             state.equipment[dropKey].unlocked = true;
             console.log(`${dropKey} unlocked!`);
-          } else if (state.recipes[dropKey] && !state.recipes[dropKey].unlocked) {
+          } else if (state.recipes?.[dropKey] && !state.recipes[dropKey].unlocked) {
             state.recipes[dropKey].unlocked = true;
             console.log(`${dropKey} recipe unlocked!`);
-          }
-        // ✅ Check if it’s a building permission
-            else if (state.buildings[dropKey] && !state.buildings[dropKey].unlocked) {
+          } else if (state.buildings?.[dropKey] && !state.buildings[dropKey].unlocked) {
             state.buildings[dropKey].unlocked = true;
             console.log(`${dropKey} building unlocked!`);
-}
+          }
         });
 
-        // ✅ Log new enemies unlocked
         if (enemy.victoryUnlocks) {
           enemy.victoryUnlocks.forEach(nextEnemyKey => {
             const nextEnemy = boogieEnemies[nextEnemyKey];
@@ -81,8 +114,7 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
           });
         }
 
-        // ✅ Refresh tab to show newly unlocked enemies
-        renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight });
+        reRender();
       } else {
         console.log(`You cannot defeat ${enemy.name} yet. Equip the right damage type.`);
       }
@@ -92,19 +124,52 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
   }
 
   tabContent.appendChild(enemyContainer);
+
+  if (infoRight && (!infoRight.innerHTML || infoRight.innerHTML.trim() === '')) {
+    infoRight.innerHTML = '<div style="font-size:18px; font-weight:bold;">Boogie Stats</div>';
+  }
+
+  // Refactored update callback with inline expressions, matching equipmentTab.js style
+  _updateCallback = () => {
+    if (!infoRight) return;
+
+    infoRight.innerHTML = `
+      <div style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        height: 100%;
+        text-align: left;
+      ">
+        <div>HP: ${state.boogie?.currentHP ?? 0} / ${state.boogie?.maxHP ?? 0}</div>
+        <div>Attack: ${state.boogie?.attackPower ?? 0}</div>
+        <div>Defense: ${state.boogie?.defense ?? 0}</div>
+        <div>Damage Types: ${
+          state.boogie?.damageTypes && state.boogie.damageTypes.size > 0
+            ? Array.from(state.boogie.damageTypes).join(', ')
+            : 'None'
+        }</div>
+        <div>Status Effects: ${
+          Array.isArray(state.boogie?.statusEffects) && state.boogie.statusEffects.length > 0
+            ? state.boogie.statusEffects.join(', ')
+            : 'None'
+        }</div>
+      </div>
+    `;
+  };
+
+  registerUpdateCallback(_updateCallback);
+
+  function cleanup() {
+    if (_updateCallback) {
+      unregisterUpdateCallback(_updateCallback);
+      _updateCallback = null;
+    }
+  }
+  activeRenderCleanup = cleanup;
+
+  _updateCallback();
+
+  return cleanup;
 }
-
-
-
-//pseudokod
-
-//Equip varmkorbröd första gången:Boogie tab unlock
-
-//Equip varmkorbröd första gången: Låser upp första motståndaren i Boogie tab. Byråkrat
-
-//Knappar på tillgängliga motståndare.
-//Om de trycks på få upp ruta där det står "Vill du utmana X?" "Ja/Nej"
-//Visa resultat från valen beroende på vad som sker i boogieEngine (Om jag vinner)
-
-//Skicka eventuell visuell information till UpperscreenTab.js
-

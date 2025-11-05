@@ -1,9 +1,9 @@
 // savegamesystem.js
 import { state } from './state.js';
-import { updateKorvCounter } from './ui.js';
+import { updateKorvCounter, refreshCurrentTab } from './ui.js';
 import { resumeActiveResearch } from './engine/researchEngine.js';
+import { resumeActiveRecipes } from './engine/recipeEngine.js';
 import { resumeActiveBuildings } from './engine/buildingsEngine.js';
-
 
 /**
  * JSON replacer to serialize Sets with a tag so we can restore them later.
@@ -16,49 +16,18 @@ function jsonReplacer(key, value) {
 }
 
 /**
- * Deep-merge source into target in-place, but:
- * - For plain objects: recurse and merge keys
- * - For arrays: replace the target array with the source array
- * - For primitives: replace
- *
- * This preserves any default keys on target that are missing from source.
+ * Replace all keys in target with keys from source, fully overwriting it.
  */
-function deepMerge(target, source) {
-  if (!source || typeof source !== 'object') {
-    return source;
+function replaceState(target, source) {
+  // Remove all existing keys in target
+  for (const key in target) {
+    delete target[key];
   }
 
-  // If source is an Array, return a shallow copy of source (overwrite)
-  if (Array.isArray(source)) {
-    return source.slice();
+  // Copy all keys from source into target (shallow copy)
+  for (const key in source) {
+    target[key] = source[key];
   }
-
-  // If target is not object, create a new object
-  if (!target || typeof target !== 'object' || Array.isArray(target)) {
-    target = {};
-  }
-
-  for (const key of Object.keys(source)) {
-    const srcVal = source[key];
-    const tgtVal = target[key];
-
-    // Special-case: serialized Set (from our export) => restore Set
-    if (srcVal && srcVal.__type === 'Set' && Array.isArray(srcVal.values)) {
-      target[key] = new Set(srcVal.values);
-      continue;
-    }
-
-    // If both are plain objects, recurse
-    if (srcVal && typeof srcVal === 'object' && !Array.isArray(srcVal)) {
-      target[key] = deepMerge(tgtVal, srcVal);
-      continue;
-    }
-
-    // For arrays and primitives: overwrite
-    target[key] = Array.isArray(srcVal) ? srcVal.slice() : srcVal;
-  }
-
-  return target;
 }
 
 // Export save to file (with replacer to preserve Sets)
@@ -80,35 +49,56 @@ export function importSave(file) {
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
-      // Parse JSON (results may include our {__type:'Set', values: [...] } sentinel objects)
       const data = JSON.parse(e.target.result);
 
-      // Deep-merge parsed data into the live state so defaults are preserved
-      deepMerge(state, data);
+      // Fully replace the in-memory state instead of merging
+      replaceState(state, data);
 
-      // Ensure boogie.damageTypes is a Set (in case save used plain array or sentinel)
+      // --- Restore Sets inside boogie object ---
       if (state.boogie) {
+        // Restore damageTypes
         if (Array.isArray(state.boogie.damageTypes)) {
           state.boogie.damageTypes = new Set(state.boogie.damageTypes);
         } else if (state.boogie.damageTypes && state.boogie.damageTypes.__type === 'Set') {
           state.boogie.damageTypes = new Set(state.boogie.damageTypes.values || []);
         } else if (!(state.boogie.damageTypes instanceof Set)) {
-          // fallback: initialize empty Set
           state.boogie.damageTypes = new Set();
+        }
+
+        // ✅ Restore defeatedEnemies too
+        if (Array.isArray(state.boogie.defeatedEnemies)) {
+          state.boogie.defeatedEnemies = new Set(state.boogie.defeatedEnemies);
+        } else if (state.boogie.defeatedEnemies && state.boogie.defeatedEnemies.__type === 'Set') {
+          state.boogie.defeatedEnemies = new Set(state.boogie.defeatedEnemies.values || []);
+        } else if (!(state.boogie.defeatedEnemies instanceof Set)) {
+          state.boogie.defeatedEnemies = new Set();
         }
       }
 
-      // Update UI elements that depend on state
+      // --- Ensure research timers have valid lastUpdated timestamps ---
+      for (const key in state.research) {
+        const rs = state.research[key];
+        if (rs.researching && !rs.completed) {
+          if (typeof rs.lastUpdated !== 'number') {
+            rs.lastUpdated = Date.now();
+          }
+        }
+      }
+
+      // --- Update UI elements that depend on state ---
       if (state.korv !== undefined) updateKorvCounter(state.korv);
 
-      // 🔹 Resume any research or building that was active
+      // --- Resume any active timers ---
       resumeActiveResearch();
-
+      resumeActiveRecipes();
       resumeActiveBuildings();
 
-      console.log("Save loaded and merged into current state:", state);
+      // --- Refresh the active tab ---
+      refreshCurrentTab();
+
+      console.log("✅ Save loaded, Sets restored, and timers resumed.");
     } catch (err) {
-      console.error("Invalid save file", err);
+      console.error("❌ Invalid save file:", err);
     }
   };
   reader.readAsText(file);

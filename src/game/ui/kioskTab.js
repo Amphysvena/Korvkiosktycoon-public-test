@@ -1,7 +1,8 @@
-import { handlekoktKorvClick,handleKorv2Click,handleKorv3Click, handleCheatKorvClick } from '../engine/kioskEngine.js';
+import { handlekoktKorvClick, handleKorv2Click, handleKorv3Click, handleCheatKorvClick } from '../engine/kioskEngine.js';
 import { state } from '../state.js';
 import { kioskData } from '../data/kioskData.js';
-import { researchData } from '../data/researchData.js'; 
+import { researchData } from '../data/researchData.js';
+import { registerUpdateCallback, unregisterUpdateCallback } from '../ui.js'; // <-- import these
 
 export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   // ── Remove previous centering wrapper if present ──
@@ -60,50 +61,49 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
   kioskContainer.id = 'kiosk-container';
 
   for (const key in kioskData) {
-  const item = kioskData[key];
+    const item = kioskData[key];
 
-  // Only show if it's unlocked or always available
-  if (
-    (key === 'korv1' || 
-     key === 'fuskkorv') ||
-    (key === 'korv2' && state.recipes.recipe1?.completed) ||
-    (key === 'korv3' && state.recipes.recipe2?.completed)
-  ) {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'kiosk-button';
-    btn.innerHTML = `
-      <img src="${KorvkioskData.pluginUrl}${item.img}" 
-           alt="${item.name}" style="width:64px; height:64px;">
-    `;
+    // Only show if it's unlocked or always available
+    if (
+      (key === 'korv1' || 
+       key === 'fuskkorv') ||
+      (key === 'korv2' && state.recipes.recipe1?.completed) ||
+      (key === 'korv3' && state.recipes.recipe2?.completed)
+    ) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'kiosk-button';
+      btn.innerHTML = `
+        <img src="${KorvkioskData.pluginUrl}${item.img}" 
+             alt="${item.name}" style="width:64px; height:64px;">
+      `;
 
-    if (key === 'korv1') btn.addEventListener('click', handlekoktKorvClick);
-    if (key === 'korv2') btn.addEventListener('click', handleKorv2Click);
-    if (key === 'korv3') btn.addEventListener('click', handleKorv3Click);
-    if (key === 'fuskkorv') btn.addEventListener('click', handleCheatKorvClick);
+      if (key === 'korv1') btn.addEventListener('click', handlekoktKorvClick);
+      if (key === 'korv2') btn.addEventListener('click', handleKorv2Click);
+      if (key === 'korv3') btn.addEventListener('click', handleKorv3Click);
+      if (key === 'fuskkorv') btn.addEventListener('click', handleCheatKorvClick);
 
-    // Hover info
-    btn.addEventListener('mouseenter', () => {
-      if (infoLeft) {
-        infoLeft.innerHTML = `
-        <div style="text-align: center;">
-          <div style="font-size: 20px; font-weight: bold; text-decoration: underline; color: black;">
-            ${item.name}
-          </div>
-          <div style="margin-top: 8px; font-size: 16px;">
-            ${item.description}
-          </div>
-        `;
-      }
-    });
-    btn.addEventListener('mouseleave', () => {
-      if (infoLeft) infoLeft.innerHTML = '';
-    });
+      // Hover info
+      btn.addEventListener('mouseenter', () => {
+        if (infoLeft) {
+          infoLeft.innerHTML = `
+          <div style="text-align: center;">
+            <div style="font-size: 20px; font-weight: bold; text-decoration: underline; color: black;">
+              ${item.name}
+            </div>
+            <div style="margin-top: 8px; font-size: 16px;">
+              ${item.description}
+            </div>
+          `;
+        }
+      });
+      btn.addEventListener('mouseleave', () => {
+        if (infoLeft) infoLeft.innerHTML = '';
+      });
 
-    kioskContainer.appendChild(btn);
+      kioskContainer.appendChild(btn);
+    }
   }
-}
-
 
   tabContent.appendChild(kioskContainer);
 
@@ -131,15 +131,11 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
   // Initial render
   updateKioskStats();
 
-  // ── Expose the function so other actions can refresh it ──
-  return { updateKioskStats };
+  // Register update callback for automatic updates every second
+  registerUpdateCallback(updateKioskStats);
+
+  // Return cleanup function to unregister update callback when tab switches away
+  return () => {
+    unregisterUpdateCallback(updateKioskStats);
+  };
 }
-
-
-
-
-// pseudocode
-
-// Visuell "Gör korv med ketchup, senap" knapp, Korv + 10 i upperscreen
-
-// Visuell "Gör korv med allt" knapp som syns och kan tryckas på när Unlock recipe 2: Korv med allt är uppnått. Korv + 50 i upperscreen

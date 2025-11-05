@@ -1,6 +1,9 @@
 import { state } from '../state.js';
 import { buildingData } from '../data/buildingData.js';
 import { startBuildingConstruction } from '../engine/buildingsEngine.js';
+import { registerUpdateCallback, unregisterUpdateCallback } from '../ui.js';
+
+let _updateCallback = null;
 
 export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   // ── Remove previous centering wrapper if present ──
@@ -20,11 +23,10 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
   const wrapper = document.createElement('div');
   wrapper.id = 'mainscreen-wrapper';
   wrapper.style.position = 'relative';
-  wrapper.style.width = '740px'; // match your design
+  wrapper.style.width = '740px';
   wrapper.style.height = '400px';
 
   const mainImg = document.createElement('img');
-  // ✅ Safe URL: handles trailing slash automatically
   mainImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/building/buildingmainscreen.png`;
   mainImg.style.width = '740px';
   mainImg.style.height = '400px';
@@ -140,4 +142,46 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
   }
 
   tabContent.appendChild(buildingContainer);
+
+  // --- Setup update callback for global timer to keep timers and UI fresh ---
+  _updateCallback = () => {
+    // Update all building buttons (timers and disabled state)
+    for (const key in buildingData) {
+      const buildingState = state.buildings[key];
+      if (!buildingState?.unlocked) continue;
+
+      const button = tabContent.querySelector(`button.kiosk-button:nth-child(${Object.keys(buildingData).indexOf(key) + 1})`);
+      if (!button) continue;
+
+      // Find the timer text element inside button
+      const timerText = button.querySelector('div');
+      if (!timerText) continue;
+
+      if (buildingState.constructing) {
+        button.disabled = true;
+        button.style.opacity = '0.5';
+        timerText.textContent = `${buildingState.remainingTime}s`;
+        // Update right panel timer
+        const rightPanelTimer = document.getElementById(`building-timer-${key}`);
+        if (rightPanelTimer) rightPanelTimer.textContent = `${buildingData[key].name}: ${buildingState.remainingTime}s`;
+      } else {
+        button.disabled = false;
+        button.style.opacity = '1';
+        timerText.textContent = `${buildingData[key].cost} korv`;
+        // Remove right panel timer
+        const rightPanelTimer = document.getElementById(`building-timer-${key}`);
+        if (rightPanelTimer) rightPanelTimer.remove();
+      }
+    }
+  };
+
+  registerUpdateCallback(_updateCallback);
+
+  // Return cleanup function for when switching tabs
+  return function cleanup() {
+    if (_updateCallback) {
+      unregisterUpdateCallback(_updateCallback);
+      _updateCallback = null;
+    }
+  };
 }

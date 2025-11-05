@@ -12,6 +12,28 @@ import { renderArtifactsTab } from './ui/artifactsTab.js';
 import { renderSpacecenterTab } from './ui/spacecenterTab.js';
 import { renderSettingsTab } from './ui/settingsTab.js';
 
+// ========== Global update callback registry ========== make sure every tab and future tab uses this to update
+const updateCallbacks = new Set();
+
+export function registerUpdateCallback(fn) {
+  updateCallbacks.add(fn);
+}
+
+export function unregisterUpdateCallback(fn) {
+  updateCallbacks.delete(fn);
+}
+
+// One global interval running every second - make sure every tab and future tab uses this to update
+setInterval(() => {
+  updateCallbacks.forEach(fn => {
+    try {
+      fn();
+    } catch (e) {
+      console.error("Error in update callback:", e);
+    }
+  });
+}, 1000);
+
 const tabs = [
   { id: 'kiosk', name: 'Kiosk', render: renderKioskTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/kiosk frame 0.png`},
   { id: 'research', name: 'Research', render: renderResearchTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/research/beaker-frame-0.png`},
@@ -27,8 +49,12 @@ const tabs = [
 ];
 
 // Store references for global use
+let activeTabId = null;
 let korvCounterEl;
 let tabButtons;
+
+// *** NEW: store the current tab's cleanup function ***
+let currentTabCleanup = null;
 
 export function initUI() {
   // Center the game container
@@ -75,23 +101,23 @@ export function initUI() {
   mainScreenContainer.style.position = 'relative';
 
   // Left info slot
- const infoLeft = document.createElement('div');
-    infoLeft.id = 'info-left';
-    infoLeft.style.width = '230px';
-    infoLeft.style.height = '100%';
-    infoLeft.style.background = '#e5e5e5';
-    infoLeft.style.padding = '10px';
-    infoLeft.style.boxSizing = 'border-box';
-    infoLeft.style.overflowY = 'auto';
-    infoLeft.style.fontFamily = 'Arial, sans-serif';
-    infoLeft.style.fontSize = '20px';
-    infoLeft.style.color = 'black';
-    infoLeft.style.fontWeight = 'bold';
+  const infoLeft = document.createElement('div');
+  infoLeft.id = 'info-left';
+  infoLeft.style.width = '230px';
+  infoLeft.style.height = '100%';
+  infoLeft.style.background = '#e5e5e5';
+  infoLeft.style.padding = '10px';
+  infoLeft.style.boxSizing = 'border-box';
+  infoLeft.style.overflowY = 'auto';
+  infoLeft.style.fontFamily = 'Arial, sans-serif';
+  infoLeft.style.fontSize = '20px';
+  infoLeft.style.color = 'black';
+  infoLeft.style.fontWeight = 'bold';
 
-    infoLeft.style.display = 'flex';
-    infoLeft.style.flexDirection = 'column';
-    infoLeft.style.justifyContent = 'center';
-    infoLeft.style.alignItems = 'center';
+  infoLeft.style.display = 'flex';
+  infoLeft.style.flexDirection = 'column';
+  infoLeft.style.justifyContent = 'center';
+  infoLeft.style.alignItems = 'center';
 
   // Center interface (mainScreen, 740px)
   const mainScreen = document.createElement('div'); // keep existing name
@@ -171,19 +197,34 @@ export function initUI() {
     tabButtons.appendChild(btn);
   });
 
+  // *** Updated switchTab to run cleanup before switching and store new cleanup ***
   function switchTab(tabId) {
+    // Run previous tab cleanup if any
+    if (currentTabCleanup) {
+      currentTabCleanup();
+      currentTabCleanup = null;
+    }
+
+    activeTabId = tabId;  // Keep track of active tab
+
     const tab = tabs.find(t => t.id === tabId);
     if (tab) {
       tabContent.innerHTML = '';
       mainScreen.innerHTML = '';
       infoLeft.innerHTML = '';
       infoRight.innerHTML = '';
-      tab.render({
+
+      // Capture possible cleanup function returned by render()
+      const cleanup = tab.render({
         tabContent,
-        mainScreen,   // center interface
-        infoLeft,     // left info slot
-        infoRight     // right info slot
+        mainScreen,
+        infoLeft,
+        infoRight
       });
+
+      if (typeof cleanup === 'function') {
+        currentTabCleanup = cleanup;
+      }
     }
     highlightTab(tabId);
   }
@@ -222,4 +263,16 @@ export function updateKorvCounter() {
   if (korvCounterEl) {
     korvCounterEl.textContent = `Korv: ${state.korv} / ${state.korvtak}`;
   }
+}
+
+export function refreshCurrentTab() {
+  const tab = tabs.find(t => t.id === activeTabId);
+  if (!tab) return;
+
+  tab.render({
+    tabContent: document.querySelector('.tab-content'),
+    mainScreen: document.querySelector('.main-screen'),
+    infoLeft: document.getElementById('info-left'),
+    infoRight: document.getElementById('info-right')
+  });
 }

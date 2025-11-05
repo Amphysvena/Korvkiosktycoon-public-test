@@ -1,10 +1,14 @@
+// equipmentTab.js
 import { state } from '../state.js';
 import { equipmentData } from '../data/equipmentData.js';
+import { registerUpdateCallback, unregisterUpdateCallback } from '../ui.js';
 
 // 🧩 Store the active category globally so it persists between renders
 let activeCategory = null;
 
-// Creates buttons for equipment when they are unlocked
+// We'll keep a reference to the update function so we can unregister it
+let _updateCallback = null;
+
 export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, infoRight) {
   const equipmentState = state.equipment[key];
   const equipmentDef = equipmentData[key];
@@ -20,6 +24,7 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
   button.style.border = 'none';
   button.style.padding = '0';
   button.style.cursor = 'pointer';
+  button.className = 'kiosk-button';
 
   const buttonImg = document.createElement('img');
   buttonImg.src = `${KorvkioskData.pluginUrl}${equipmentDef.img}`;
@@ -137,8 +142,9 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
 
     // Equip this item
     equipmentState.equipped = true;
-    if (key === 'korv1' && !state.skills.throw.unlocked) {
-      state.skills.throw.unlocked = true;
+    if (key === 'korv1' && state.skills && !state.skills.throw?.unlocked) {
+      if (!state.skills.throw) state.skills.throw = { unlocked: true, level: 1 };
+      else state.skills.throw.unlocked = true;
     }
     if (equipmentDef.onEquip) equipmentDef.onEquip(state);
 
@@ -246,6 +252,26 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
     equipmentContainer.appendChild(slotDiv);
   });
 
+  // --- Helper function to update all slot images instantly ---
+  function updateAllSlotImages() {
+    for (const slot of slots) {
+      const slotImg = document.querySelector(`#slot-${slot.key} img`);
+      if (!slotImg) continue;
+
+      const equippedItemKey = Object.keys(state.equipment).find(
+        key => state.equipment[key]?.equipped && equipmentData[key]?.slot === slot.key
+      );
+
+      if (equippedItemKey) {
+        slotImg.src = `${KorvkioskData.pluginUrl}${equipmentData[equippedItemKey].img}`;
+        slotImg.style.opacity = '1';
+      } else {
+        slotImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`;
+        slotImg.style.opacity = '0.5';
+      }
+    }
+  }
+
   // --- CATEGORY BUTTONS ---
   if (!activeCategory) activeCategory = slots[0].key;
   if (categoryOverride) activeCategory = categoryOverride;
@@ -279,6 +305,9 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
       renderEquipmentButtons(activeCategory, equipmentButtonContainer, tabContent, mainScreen, infoLeft, infoRight);
       Array.from(categoryContainer.children).forEach(b => b.style.fontWeight = 'normal');
       btn.style.fontWeight = 'bold';
+
+      // Update slot images immediately after category change
+      updateAllSlotImages();
     });
 
     categoryContainer.appendChild(btn);
@@ -291,19 +320,63 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
   renderEquipmentButtons(activeCategory, equipmentButtonContainer, tabContent, mainScreen, infoLeft, infoRight);
 
   if (infoLeft) infoLeft.innerHTML = 'Select an item for info';
+
+  // Update slot images immediately on initial render
+  updateAllSlotImages();
+
+  // --- Register an update callback so this tab's dynamic visuals refresh via ui.js loop ---
+  _updateCallback = () => {
+    // Keep slot images and boogie stats in sync
+    // update slot images (in case equip state changed elsewhere)
+    for (const k in equipmentData) {
+      const def = equipmentData[k];
+      const slotImg = document.querySelector(`#slot-${def.slot} img`);
+      if (!slotImg) continue;
+      const equippedItem = Object.keys(state.equipment).find(
+        key => state.equipment[key]?.equipped && equipmentData[key]?.slot === def.slot
+      );
+      if (equippedItem) {
+        slotImg.src = `${KorvkioskData.pluginUrl}${equipmentData[equippedItem].img}`;
+        slotImg.style.opacity = '1';
+      } else {
+        slotImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`;
+        slotImg.style.opacity = '0.5';
+      }
+    }
+
+    // refresh boogie stats if infoRight exists
+    if (infoRight) {
+      const b = state.boogie;
+      const damageText = b.damageTypes && b.damageTypes.size > 0
+        ? Array.from(b.damageTypes).join(', ')
+        : 'None';
+
+      infoRight.innerHTML = `
+        <div style="
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: flex-start;
+          height: 100%;
+          text-align: left;
+        ">
+          <div>HP: ${b.currentHP} / ${b.maxHP}</div>
+          <div>Attack: ${b.attackPower}</div>
+          <div>Defense: ${b.defense}</div>
+          <div>Damage Types: ${damageText}</div>
+          <div>Status Effects: ${b.statusEffects.length > 0 ? b.statusEffects.join(', ') : 'None'}</div>
+        </div>
+      `;
+    }
+  };
+
+  registerUpdateCallback(_updateCallback);
+
+  // Return cleanup function so ui.js can call it on tab switch
+  return function cleanup() {
+    if (_updateCallback) {
+      unregisterUpdateCallback(_updateCallback);
+      _updateCallback = null;
+    }
+  };
 }
-
-
-
-
-
-//Pseudokod
-
-//Equip interface har slots: 
-// - Primary Hand
-// - Secondary Hand
-// - Korvlåda
-// - Hatt
-// - en simpel gubbe med 4 rutor som man kan klicka på. Klicka på rutan så kommer det upp val för att equippa tillgängliga equips 
-
-//bilder på alla tillgängliga equipment med kort beskriving i upperscreen om man markerar ett equip

@@ -1,5 +1,9 @@
 import { state } from '../state.js';
 import { recipeData } from '../data/recipeData.js';
+import { registerUpdateCallback, unregisterUpdateCallback } from '../ui.js';
+import { startRecipeCraft } from '../engine/recipeEngine.js';
+
+let _updateCallback = null;
 
 export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   // ── Setup main background image ──
@@ -18,8 +22,12 @@ export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }
   // ── Create container ──
   const recipeContainer = document.createElement('div');
   recipeContainer.id = 'recipe-container';
+  tabContent.appendChild(recipeContainer);
 
-  // ── Helper: Create recipe button ──
+  // Store references to update functions for buttons
+  const buttonsMap = new Map();
+
+  // ── Helper: create recipe button ──
   function createRecipeButton(key) {
     const recipeState = state.recipes[key];
     const recipeDef = recipeData[key];
@@ -31,14 +39,12 @@ export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }
     button.style.position = 'relative';
     button.style.margin = '5px';
 
-    // Image
     button.innerHTML = `
       <img src="${KorvkioskData.pluginUrl}${recipeDef.img}" 
            alt="${recipeDef.name}" 
            style="width:64px; height:64px;">
     `;
 
-    // Timer text
     const timerText = document.createElement('div');
     timerText.style.position = 'absolute';
     timerText.style.bottom = '-20px';
@@ -47,7 +53,7 @@ export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }
     timerText.style.fontSize = '14px';
     button.appendChild(timerText);
 
-    // ── Update visuals ──
+    // Update visuals for button (called on each tick)
     function updateButton() {
       if (recipeState.crafting) {
         button.disabled = true;
@@ -67,7 +73,7 @@ export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }
       }
     }
 
-    // ── Hover info (left panel) ──
+    // Hover info for left panel
     button.addEventListener('mouseenter', () => {
       if (infoLeft) {
         infoLeft.innerHTML = `
@@ -90,65 +96,16 @@ export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }
       if (infoLeft) infoLeft.innerHTML = '';
     });
 
-    // ── Click logic ──
+    // Click logic: start crafting if affordable, not crafting or completed
     button.addEventListener('click', () => {
       if (state.korv >= recipeDef.cost && !recipeState.crafting && !recipeState.completed) {
         state.korv -= recipeDef.cost;
-        startRecipeCraft(key);
+        startRecipeCraft(key, updateButton);
         updateButton();
       }
     });
 
-    // ── Start crafting ──
-    function startRecipeCraft(key) {
-  recipeState.crafting = true;
-  recipeState.remainingTime = recipeDef.duration;
-
-  const timer = setInterval(() => {
-    recipeState.remainingTime--;
-    updateButton();
-
-    if (recipeState.remainingTime <= 0) {
-      clearInterval(timer);
-      recipeState.crafting = false;
-      recipeState.completed = true;
-      updateButton();
-      console.log(`${key} completed!`);
-
-      // ── Unlock rewards when crafting completes ──
-      if (key === 'recipe1') {
-        // Unlock korv2 as equipment
-        if (!state.equipment.korv2.unlocked) {
-          state.equipment.korv2.unlocked = true;
-          console.log('Korv2 unlocked via Recipe 1!');
-        }
-
-        // Optional: also unlock korv2 in kiosk tab
-        if (state.kiosk && state.kiosk.korv2) {
-          state.kiosk.korv2.unlocked = true;
-          console.log('Korv2 kiosk item unlocked!');
-        }
-      }
-
-      // 🆕 New: unlock korv3 after Recipe 2
-      if (key === 'recipe2') {
-        if (!state.equipment.korv3.unlocked) {
-          state.equipment.korv3.unlocked = true;
-          console.log('Korv3 unlocked via Recipe 2!');
-        }
-
-        // Optional: also unlock in kiosk if it exists there
-        if (state.kiosk && state.kiosk.korv3) {
-          state.kiosk.korv3.unlocked = true;
-          console.log('Korv3 kiosk item unlocked!');
-        }
-      }
-    }
-  }, 1000);
-}
-
-
-    // ── Right panel timer display ──
+    // Right panel timer display helpers
     function updateRightPanelTimer(key, remainingTime) {
       if (!infoRight) return;
       let timerRow = document.getElementById(`recipe-timer-${key}`);
@@ -168,23 +125,36 @@ export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }
       if (row) row.remove();
     }
 
+    // Store update function to refresh UI each tick
+    buttonsMap.set(key, updateButton);
+
+    // Initial update of button visuals
     updateButton();
+
     return button;
   }
 
-  // ── Render all unlocked recipes ──
+  // Render all unlocked recipes
   for (const key in recipeData) {
     const btn = createRecipeButton(key);
     if (btn) recipeContainer.appendChild(btn);
   }
 
-  tabContent.appendChild(recipeContainer);
+  // ── Global update callback to refresh UI every tick ──
+  _updateCallback = () => {
+    for (const key in state.recipes) {
+      const updateFn = buttonsMap.get(key);
+      if (updateFn) updateFn();
+    }
+  };
+
+  registerUpdateCallback(_updateCallback);
+
+  // Cleanup on tab close / switch
+  return function cleanup() {
+    if (_updateCallback) {
+      unregisterUpdateCallback(_updateCallback);
+      _updateCallback = null;
+    }
+  };
 }
-
-//pseudokod
-
-//Ärkekrat besegrad = 
-// Recipe 1 för korv med bröd, ketchup, senap unlocked. Kostar 750 korv. Ges efter 1 minut av forskning när man tryckt på knappen och betalat 750 korv. Timer syns över knappen
-
-//Överförmyndare besegrad = 
-// Recipe 2 för korv med allt unlocked. Kostar 10000 korv. Ges efter 15 minuter av forskning när man tryckt på knappen och betalat 10000 korv. Timer syns över knappen

@@ -2,6 +2,9 @@ import { state } from '../state.js';
 import { researchUnlock, startResearch, finishAllResearchTimers } from '../engine/researchEngine.js';
 import { researchData } from '../data/researchData.js';
 
+let researchTabTimerInterval = null;  // Holds the setInterval so we can clear it if needed
+const researchButtonsMap = new Map(); // Store button update functions
+
 export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   // ── Setup main background image ──
   mainScreen.innerHTML = `
@@ -19,10 +22,13 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
   // ── Unlock logic ──
   researchUnlock();
 
-  // ── Research container (like kioskContainer) ──
+  // Clear previous button references (important for tab switching)
+  researchButtonsMap.clear();
+
+  // ── Research container ──
   const researchContainer = document.createElement('div');
   researchContainer.id = 'research-container';
-  
+
   // ── Helper: Create a research button ──
   function createResearchButton(key) {
     const researchState = state.research[key];
@@ -31,16 +37,14 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
 
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'kiosk-button'; // ✅ reuse kiosk styling
+    button.className = 'kiosk-button';
 
-    // Button image
     button.innerHTML = `
       <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/research/${researchDef.img}" 
            alt="${researchDef.name}" 
            style="width:64px; height:64px;">
     `;
 
-    // Timer text overlay
     const timerText = document.createElement('div');
     timerText.style.position = 'absolute';
     timerText.style.bottom = '-20px';
@@ -50,7 +54,6 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
     button.style.position = 'relative';
     button.appendChild(timerText);
 
-    // ── Update visuals ──
     function updateButton() {
       if (researchState.researching) {
         button.disabled = true;
@@ -76,7 +79,6 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
       }
     }
 
-    // ── Hover info (left panel) ──
     button.addEventListener('mouseenter', () => {
       if (infoLeft) {
         infoLeft.innerHTML = `
@@ -94,11 +96,11 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
         `;
       }
     });
+
     button.addEventListener('mouseleave', () => {
       if (infoLeft) infoLeft.innerHTML = '';
     });
 
-    // ── Click logic ──
     button.addEventListener('click', () => {
       if (!researchState.researching && !researchState.completed) {
         startResearch(key);
@@ -108,14 +110,15 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
       updateButton();
     });
 
-    // ── Update loop ──
-    setInterval(updateButton, 1000);
+    // Save the update function so we can call it in the interval later
+    researchButtonsMap.set(key, updateButton);
+
     updateButton();
 
     return button;
   }
 
-  // ── Right panel: Timer list ──
+  // Right panel timer update helpers
   function updateRightPanelTimer(key, remainingTime) {
     if (!infoRight) return;
     let timerRow = document.getElementById(`timer-${key}`);
@@ -135,34 +138,62 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
     if (row) row.remove();
   }
 
-  // ── Render all unlocked researches ──
+  // Render buttons
   for (const key in researchData) {
     const btn = createResearchButton(key);
     if (btn) researchContainer.appendChild(btn);
   }
 
-  // ── Cheat button ──
+  // Cheat button
   const finishResearchButton = document.createElement('button');
   finishResearchButton.type = 'button';
   finishResearchButton.id = 'finishResearchButton';
   finishResearchButton.textContent = 'Finish Research';
-  finishResearchButton.className = 'kiosk-button'; // ✅ match style
+  finishResearchButton.className = 'kiosk-button';
   finishResearchButton.style.width = '120px';
   finishResearchButton.style.height = '40px';
   finishResearchButton.style.fontSize = '14px';
   finishResearchButton.addEventListener('click', finishAllResearchTimers);
-
   researchContainer.appendChild(finishResearchButton);
+
   tabContent.appendChild(researchContainer);
+
+  // Clear previous interval if exists (important to avoid multiple intervals)
+  if (researchTabTimerInterval) clearInterval(researchTabTimerInterval);
+
+  // Set up the update interval (every second)
+  researchTabTimerInterval = setInterval(() => {
+    // Update all buttons
+    researchButtonsMap.forEach((updateFn) => updateFn());
+
+    // Update the right panel timers for any researching researches
+    for (const key in state.research) {
+      const rs = state.research[key];
+      if (rs.researching && !rs.completed) {
+        updateRightPanelTimer(key, rs.remainingTime);
+      } else {
+        removeRightPanelTimer(key);
+      }
+    }
+  }, 1000);
+
+  // Initial update on render so UI is synced immediately
+  researchButtonsMap.forEach((updateFn) => updateFn());
+  for (const key in state.research) {
+    const rs = state.research[key];
+    if (rs.researching && !rs.completed) {
+      updateRightPanelTimer(key, rs.remainingTime);
+    } else {
+      removeRightPanelTimer(key);
+    }
+  }
+
+  // ─── Cleanup function on tab switch ───
+  return () => {
+    if (researchTabTimerInterval) {
+      clearInterval(researchTabTimerInterval);
+      researchTabTimerInterval = null;
+    }
+    researchButtonsMap.clear();
+  };
 }
-
-
-//pseudokod
-
-// 2 När det finns 100 korv i lagret så blir Korvlådan Plastlåda synlig och köpbar. Kostar 100 korv. Ger spelaren Equipment Plastlåda och ökar korvlager max till 1000
-
-// 3 När det finns 750 korv i lagret så blir Korvlådan Fisklåda synlig och köpbar, kostar 750 korv. Ger spelaren Equipment fisklåda och ökar korvlager max till 7500.
-
-// 4 När Recipe 2 Korv med allt uppnåtts så blir Condiments Machine synlig och köpbar, kostar 10000 korv. Ökar korv med +50 per 5 sek
-
-//dvs bilder och ett sätt att visa dom när de redan har använts. 

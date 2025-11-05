@@ -1,11 +1,7 @@
-//older unlock code
-/*export function isResearchTabUnlocked() {
-  return state.korv >= 10;
-}*/
 import { state } from '../state.js';
 import { researchData } from '../data/researchData.js';
 
-// Check if researches should unlock based on criteria
+// Check unlocks (your existing function)
 export function researchUnlock() {
   for (const key in researchData) {
     const research = researchData[key];
@@ -22,30 +18,48 @@ export function researchUnlock() {
 function startResearchCountdown(key) {
   const researchState = state.research[key];
   const researchDef = researchData[key];
+  if (!researchState || !researchDef) return;
 
-  const interval = setInterval(() => {
-    researchState.remainingTime--;
+  // Clear existing timer to avoid duplicates
+  if (researchState._activeTimer) {
+    clearInterval(researchState._activeTimer);
+  }
+
+  // Save current time as last updated
+  researchState.lastUpdated = Date.now();
+
+  researchState._activeTimer = setInterval(() => {
+    const now = Date.now();
+    const elapsedSeconds = Math.floor((now - researchState.lastUpdated) / 1000);
+    if (elapsedSeconds <= 0) return; // no time passed
+
+    researchState.remainingTime -= elapsedSeconds;
+    if (researchState.remainingTime < 0) researchState.remainingTime = 0;
+
+    researchState.lastUpdated = now;
 
     if (researchState.remainingTime <= 0) {
-      clearInterval(interval);
-      researchState.remainingTime = 0;
+      clearInterval(researchState._activeTimer);
+      researchState._activeTimer = null;
+
       researchState.researching = false;
       researchState.completed = true;
 
       console.log(`${researchDef.name} research complete!`);
 
-      // Only run completion effect automatically if NOT toggleable
+      // Run effect only if not toggleable
       if (!researchDef.toggleable && typeof researchDef.effect === "function") {
-      researchDef.effect(state);
+        researchDef.effect(state);
       }
     }
   }, 1000);
 }
 
-// Start a research by key (e.g. "autoFry", "plasticBox")
+// Start research by key
 export function startResearch(key) {
   const researchState = state.research[key];
   const researchDef = researchData[key];
+  if (!researchState || !researchDef) return;
 
   if (!researchState.researching && !researchState.completed) {
     if (state.korv < researchDef.cost) {
@@ -56,6 +70,7 @@ export function startResearch(key) {
     state.korv -= researchDef.cost;
     researchState.researching = true;
     researchState.remainingTime = researchDef.duration;
+    researchState.lastUpdated = Date.now();
 
     console.log(`${researchDef.name} research started! ${researchDef.cost} korv deducted.`);
 
@@ -63,18 +78,49 @@ export function startResearch(key) {
   }
 }
 
-// Resume any active research timers (used after loading save)
+// Resume active research timers (after loading)
 export function resumeActiveResearch() {
   for (const key in state.research) {
     const researchState = state.research[key];
+    const researchDef = researchData[key];
+
     if (researchState.researching && !researchState.completed) {
+      // If lastUpdated is missing or invalid, set it now
+      if (typeof researchState.lastUpdated !== 'number') {
+        researchState.lastUpdated = Date.now();
+      }
+
+      // Calculate elapsed time
+      const now = Date.now();
+      const elapsedSeconds = Math.floor((now - researchState.lastUpdated) / 1000);
+      if (elapsedSeconds > 0) {
+        researchState.remainingTime -= elapsedSeconds;
+        if (researchState.remainingTime <= 0) {
+          researchState.remainingTime = 0;
+          researchState.researching = false;
+          researchState.completed = true;
+
+          console.log(`${researchDef.name} research complete on load!`);
+
+          if (!researchDef.toggleable && typeof researchDef.effect === "function") {
+            researchDef.effect(state);
+          }
+          continue; // no need to start timer
+        }
+      }
+
+      // Update lastUpdated to now
+      researchState.lastUpdated = now;
+
+      // Start the countdown timer with updated remainingTime
       startResearchCountdown(key);
-      console.log(`Resuming ${researchData[key].name} research timer...`);
+
+      console.log(`Resumed ${researchDef.name} research timer with ${researchState.remainingTime}s remaining.`);
     }
   }
 }
 
-// Setup passive effects for researches with effectInterval
+// Setup passive effects for researches with effectInterval (unchanged)
 for (const key in researchData) {
   const researchDef = researchData[key];
 
@@ -83,7 +129,6 @@ for (const key in researchData) {
       const rs = state.research[key];
       if (!rs.completed) return;
 
-      // If research is toggleable, only run effect if toggle is ON
       if (researchDef.toggleable && !state[researchDef.toggleable]) return;
 
       researchDef.effect(state);
@@ -91,26 +136,15 @@ for (const key in researchData) {
   }
 }
 
-
-//cheat code to finish all researchtimers
+// Cheat code to finish all research timers
 export function finishAllResearchTimers() {
   console.log("Cheat: setting all active research timers to 1 second left");
   for (const key in state.research) {
     const rs = state.research[key];
     if (rs.researching && !rs.completed) {
-      rs.remainingTime = 1; // let the normal countdown finish it next tick
+      rs.remainingTime = 1;
+      rs.lastUpdated = Date.now();
       console.log(`${key} set to 1 second remaining`);
     }
   }
-} //end cheat code
-
-
-
-
-
-
-// 4 När Recipe 2 Korv med allt uppnåtts så blir Condiments Machine synlig och köpbar, kostar 10000 korv. Ökar korv med +50 per 5 sek
-
-//dvs koden som aktiverar AutoFry ska ge en permanent bonus i korvinkomst, i state.js?  
-//koden som aktiverar Condiments Machine ska ge en permanent bonus i korvinkomst, i state.js?
-//Korvlådorna ska unlockas till equipment och korvlager ska öka sitt tak, i state.js?
+}
