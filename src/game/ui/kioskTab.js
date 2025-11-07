@@ -59,6 +59,12 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
   // ── Kiosk buttons container ──
   const kioskContainer = document.createElement('div');
   kioskContainer.id = 'kiosk-container';
+  kioskContainer.style.display = 'flex';
+  kioskContainer.style.flexWrap = 'wrap';
+  kioskContainer.style.gap = '10px';
+  kioskContainer.style.justifyContent = 'flex-start';
+  kioskContainer.style.alignItems = 'flex-start';
+  kioskContainer.style.padding = '10px';
 
   for (const key in kioskData) {
     const item = kioskData[key];

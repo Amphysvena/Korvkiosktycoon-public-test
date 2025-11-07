@@ -28,6 +28,13 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
   // ── Research container ──
   const researchContainer = document.createElement('div');
   researchContainer.id = 'research-container';
+  researchContainer.style.display = 'flex';
+  researchContainer.style.flexWrap = 'wrap';
+  researchContainer.style.gap = '10px';
+  researchContainer.style.justifyContent = 'flex-start';
+  researchContainer.style.alignItems = 'flex-start';
+  researchContainer.style.padding = '10px';
+
 
   // ── Helper: Create a research button ──
   function createResearchButton(key) {
@@ -38,6 +45,7 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'kiosk-button';
+    
 
     button.innerHTML = `
       <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/research/${researchDef.img}" 
