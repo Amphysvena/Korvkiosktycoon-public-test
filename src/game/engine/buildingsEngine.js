@@ -23,7 +23,7 @@ export function startBuildingConstruction(key, updateButton, updateMainScreenCou
       b._activeTimer = null;
       b.constructing = false;
       b.count++;
-      if (def.onBuild) def.onBuild(state);
+      if (def.effect) def.effect(state);
       console.log(`${key} constructed! Count: ${b.count}`);
       if (updateButton) updateButton();
       if (updateMainScreenCount) updateMainScreenCount();

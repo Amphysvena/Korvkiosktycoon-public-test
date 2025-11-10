@@ -45,6 +45,11 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
   const buildingContainer = document.createElement('div');
   buildingContainer.id = 'building-container';
 
+  // Helper function to format big numbers (optional)
+  function formatCost(num) {
+    return num >= 1e6 ? num.toExponential(2).replace('e+', 'E') : num.toLocaleString();
+  }
+
   // ── Helper: create building button ──
   function createBuildingButton(key) {
     const buildingState = state.buildings[key];
@@ -70,7 +75,14 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
     timerText.style.fontSize = '14px';
     button.appendChild(timerText);
 
+    // Function to compute cost dynamically
+    function getCurrentCost() {
+      return Math.floor(buildingDef.baseCost * Math.pow(buildingDef.growthRate, buildingState.count));
+    }
+
     function updateButton() {
+      const cost = getCurrentCost();
+
       if (buildingState.constructing) {
         button.disabled = true;
         button.style.opacity = '0.5';
@@ -79,7 +91,7 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
       } else {
         button.disabled = false;
         button.style.opacity = '1';
-        timerText.textContent = `${buildingDef.cost} korv`;
+        timerText.textContent = `${formatCost(cost)} korv`;
         removeRightPanelTimer(key);
       }
     }
@@ -87,12 +99,13 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
     // Hover info
     button.addEventListener('mouseenter', () => {
       if (!infoLeft) return;
+      const cost = getCurrentCost();
       infoLeft.innerHTML = `
         <div style="text-align:center;">
           <div style="font-size:20px; font-weight:bold; text-decoration:underline;">${buildingDef.name}</div>
           <div style="margin-top:8px; font-size:16px;">${buildingDef.itemDescription || 'No description yet.'}</div>
           <div style="margin-top:8px; font-size:14px;">
-            Cost: ${buildingDef.cost} korv<br>
+            Cost: ${formatCost(cost)} korv<br>
             Duration: ${buildingDef.duration}s<br>
             Built: ${buildingState.count}
           </div>
@@ -105,8 +118,9 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
 
     // Click logic
     button.addEventListener('click', () => {
-      if (state.korv >= buildingDef.cost && !buildingState.constructing) {
-        state.korv -= buildingDef.cost;
+      const cost = getCurrentCost();
+      if (state.korv >= cost && !buildingState.constructing) {
+        state.korv -= cost;
         startBuildingConstruction(key, updateButton);
         updateButton();
       }
@@ -145,7 +159,6 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
 
   // --- Setup update callback for global timer to keep timers and UI fresh ---
   _updateCallback = () => {
-    // Update all building buttons (timers and disabled state)
     for (const key in buildingData) {
       const buildingState = state.buildings[key];
       if (!buildingState?.unlocked) continue;
@@ -153,22 +166,22 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
       const button = tabContent.querySelector(`button.kiosk-button:nth-child(${Object.keys(buildingData).indexOf(key) + 1})`);
       if (!button) continue;
 
-      // Find the timer text element inside button
       const timerText = button.querySelector('div');
       if (!timerText) continue;
+
+      const buildingDef = buildingData[key];
+      const cost = Math.floor(buildingDef.baseCost * Math.pow(buildingDef.growthRate, buildingState.count));
 
       if (buildingState.constructing) {
         button.disabled = true;
         button.style.opacity = '0.5';
         timerText.textContent = `${buildingState.remainingTime}s`;
-        // Update right panel timer
         const rightPanelTimer = document.getElementById(`building-timer-${key}`);
         if (rightPanelTimer) rightPanelTimer.textContent = `${buildingData[key].name}: ${buildingState.remainingTime}s`;
       } else {
         button.disabled = false;
         button.style.opacity = '1';
-        timerText.textContent = `${buildingData[key].cost} korv`;
-        // Remove right panel timer
+        timerText.textContent = `${formatCost(cost)} korv`;
         const rightPanelTimer = document.getElementById(`building-timer-${key}`);
         if (rightPanelTimer) rightPanelTimer.remove();
       }
@@ -177,7 +190,6 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
 
   registerUpdateCallback(_updateCallback);
 
-  // Return cleanup function for when switching tabs
   return function cleanup() {
     if (_updateCallback) {
       unregisterUpdateCallback(_updateCallback);

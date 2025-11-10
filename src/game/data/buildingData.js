@@ -4,10 +4,11 @@ export const buildingData = {
         img: 'src/game/Assets/img/building/building 1 - lagerhus.png',
         effectDescription: 'Storage house for your cold dogs.',
         itemDescription: 'Storage house for your cold dogs',
-        cost: 1000,
-        duration: 600,
-        onBuild: (state) => {
-            korvtak += 1000
+        baseCost: 1000,
+        growthRate: 1.1,
+        duration: 5, //ändra till 600
+        effect: (state) => {
+        state.korvtak += 1000;
 
         },
     }
