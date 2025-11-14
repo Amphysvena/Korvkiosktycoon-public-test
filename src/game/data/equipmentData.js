@@ -150,13 +150,12 @@ export const equipmentData = {
     itemDescription:'Agurken straight outta Boston.',
     toggleable: true,
     onEquip: (state) => {
-      //hp regen +1 per 5
-    },
-    onUnequip: (state) => {
-      //remove hp regen +1 per 5
-    }
+    state.boogie.regenBonuses['bostongurka'] = 1 / 5; // +1 HP per 5 seconds (0.2 per sec)
   },
-
+  onUnequip: (state) => {
+    delete state.boogie.regenBonuses['bostongurka'];
+  }
+},
 
 
   //hattar
@@ -168,12 +167,10 @@ export const equipmentData = {
     itemDescription:'The top of the crop of hats. Now we are talking!',
     toggleable: true,
     onEquip: (state) => {
-      state.boogie.maxHP += 10;
-      state.boogie.currentHP += 10; 
+      state.boogie.maxHP += 10;       
     },
     onUnequip: (state) => {
-      state.boogie.maxHP -= 10;
-      state.boogie.currentHP -= 10; 
+      state.boogie.maxHP -= 10;      
     }
 
   },
@@ -186,12 +183,10 @@ export const equipmentData = {
     itemDescription:'In pristine condition, almost as if it blesse by some entity.',
     toggleable: true,
     onEquip: (state) => {
-      state.boogie.maxHP += 50;
-      state.boogie.currentHP += 50; 
+      state.boogie.maxHP += 50;       
     },
     onUnequip: (state) => {
-      state.boogie.maxHP -= 50;
-      state.boogie.currentHP -= 50; 
+      state.boogie.maxHP -= 50;      
     }
 
   }

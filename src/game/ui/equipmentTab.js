@@ -73,7 +73,7 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
         height: 100%;
         text-align: left;
       ">
-        <div>HP: ${b.currentHP} / ${b.maxHP}</div>
+        <div>HP: ${Math.floor(b.currentHP)} / ${Math.floor(b.maxHP)}</div>
         <div>Attack: ${b.attackPower}</div>
         <div>Defense: ${b.defense}</div>
         <div>Damage Types: ${damageText}</div>
@@ -360,7 +360,7 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
           height: 100%;
           text-align: left;
         ">
-          <div>HP: ${b.currentHP} / ${b.maxHP}</div>
+          <div>HP: ${Math.floor(b.currentHP)} / ${Math.floor(b.maxHP)}</div>
           <div>Attack: ${b.attackPower}</div>
           <div>Defense: ${b.defense}</div>
           <div>Damage Types: ${damageText}</div>

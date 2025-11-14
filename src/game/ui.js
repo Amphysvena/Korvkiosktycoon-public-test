@@ -32,7 +32,7 @@ setInterval(() => {
       console.error("Error in update callback:", e);
     }
   });
-}, 1000);
+}, 1000 / 30); //30 herz
 
 const tabs = [
   { id: 'kiosk', name: 'Kiosk', render: renderKioskTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/kiosk frame 0.png`},

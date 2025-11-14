@@ -1,3 +1,33 @@
+import { state } from '../state.js';
+
+let regenIntervalID = null;
+
+export function startBoogieRegen() {
+  if (regenIntervalID) return;
+
+  regenIntervalID = setInterval(() => {
+    const b = state.boogie;
+    if (!b) return;
+
+    // Sum all bonuses in regenBonuses object
+    const bonusSum = Object.values(b.regenBonuses).reduce((sum, val) => sum + val, 0);
+    const totalRegen = (b.regeneration || 0) + bonusSum;
+    if (totalRegen <= 0) return;
+
+    if (b.currentHP < b.maxHP) {
+      b.currentHP = Math.min(b.currentHP + totalRegen, b.maxHP);
+    }
+  }, 1000);
+}
+
+export function stopBoogieRegen() {
+  if (regenIntervalID) {
+    clearInterval(regenIntervalID);
+    regenIntervalID = null;
+  }
+}
+
+
 //pseudokod
 
 

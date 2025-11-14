@@ -142,7 +142,7 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
         height: 100%;
         text-align: left;
       ">
-        <div>HP: ${state.boogie?.currentHP ?? 0} / ${state.boogie?.maxHP ?? 0}</div>
+        <div>HP: ${Math.floor(state.boogie?.currentHP ?? 0)} / ${Math.floor(state.boogie?.maxHP ?? 0)}</div>
         <div>Attack: ${state.boogie?.attackPower ?? 0}</div>
         <div>Defense: ${state.boogie?.defense ?? 0}</div>
         <div>Damage Types: ${

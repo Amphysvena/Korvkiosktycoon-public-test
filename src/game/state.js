@@ -37,7 +37,14 @@ export const state = {
   // Boogie stats
   boogie: {
     maxHP: 3,
-    currentHP: 3,
+    currentHP: 1,
+    //passive regeneration
+
+    //base regen at the start of the game
+    regeneration: 1 / 60,   // ≈0.0166 HP per second → 1 HP per minute
+
+    regenBonuses: {},          // Added by equipment/items/etc.
+
     damageTypes: new Set (),
     attackPower: 0,
     defense: 0,
