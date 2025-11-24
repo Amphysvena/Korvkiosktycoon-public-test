@@ -1,4 +1,4 @@
-//Researchdata defining unlock requirements
+//Researchdata defining unlock requirements and stats
 export const researchData = {
   autoFry: {
   name: "AutoFry",
@@ -25,7 +25,7 @@ export const researchData = {
   criteria: (state) => state.korv >= 100, 
   effect: (state) => {
     state.korvtak += 900;
-    state.equipment.plasticBox.unlocked = true; // make sure this exists
+    state.equipment.plasticBox.unlocked = true; 
   }
   },
 
@@ -38,7 +38,7 @@ export const researchData = {
   criteria: (state) => state.korv >= 750,
   effect: (state) => {
     state.korvtak += 6350;
-    state.equipment.fishBox.unlocked = true; // make sure this exists
+    state.equipment.fishBox.unlocked = true; 
   }
  
   },
@@ -46,6 +46,11 @@ export const researchData = {
   condimentsMachine : {
   name: "Condiments Machine",
   img: "Research4-Condimentmachine.png",
-  criteria: (state) => false //placeholder
+  description: "A machine that applies condiments to sausages. Faster, more powerful and accurate than any human.",
+  cost: 1500,
+  duration: 360,
+  criteria: (state) => state.recipes.recipe2?.completed === true,
+  effect:false, //add 50 korv per second
+  toggleable: 'condimentsMachineActive'
   }
 };

@@ -64,8 +64,9 @@ export const state = {
 
   },
 
-
-  autoFryActive: false // toggleable after research is done
+  // toggleable after research is done
+  autoFryActive: false, 
+  condimentsMachineActive: false
 };
 
 // Auto-fill state.research from researchData
