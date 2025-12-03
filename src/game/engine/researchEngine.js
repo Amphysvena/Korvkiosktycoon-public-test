@@ -1,5 +1,12 @@
 import { state } from '../state.js';
 import { researchData } from '../data/researchData.js';
+import { registerUpdateCallback, unregisterUpdateCallback } from '../gameLoop.js';  // adjust path if needed
+
+// Flag to track if the global update callback is registered
+let isUpdateCallbackRegistered = false;
+
+// Update callback function reference for unregistering if needed
+let updateCallback = null;
 
 // Check unlocks (your existing function)
 export function researchUnlock() {
@@ -12,47 +19,6 @@ export function researchUnlock() {
       console.log(`${research.name} unlocked!`);
     }
   }
-}
-
-// Internal: countdown timer for a specific research
-function startResearchCountdown(key) {
-  const researchState = state.research[key];
-  const researchDef = researchData[key];
-  if (!researchState || !researchDef) return;
-
-  // Clear existing timer to avoid duplicates
-  if (researchState._activeTimer) {
-    clearInterval(researchState._activeTimer);
-  }
-
-  // Save current time as last updated
-  researchState.lastUpdated = Date.now();
-
-  researchState._activeTimer = setInterval(() => {
-    const now = Date.now();
-    const elapsedSeconds = Math.floor((now - researchState.lastUpdated) / 1000);
-    if (elapsedSeconds <= 0) return; // no time passed
-
-    researchState.remainingTime -= elapsedSeconds;
-    if (researchState.remainingTime < 0) researchState.remainingTime = 0;
-
-    researchState.lastUpdated = now;
-
-    if (researchState.remainingTime <= 0) {
-      clearInterval(researchState._activeTimer);
-      researchState._activeTimer = null;
-
-      researchState.researching = false;
-      researchState.completed = true;
-
-      console.log(`${researchDef.name} research complete!`);
-
-      // Run effect only if not toggleable
-      if (!researchDef.toggleable && typeof researchDef.effect === "function") {
-        researchDef.effect(state);
-      }
-    }
-  }, 1000);
 }
 
 // Start research by key
@@ -74,12 +40,53 @@ export function startResearch(key) {
 
     console.log(`${researchDef.name} research started! ${researchDef.cost} korv deducted.`);
 
-    startResearchCountdown(key);
+    // Register global update callback if not already
+    if (!isUpdateCallbackRegistered) {
+      updateCallback = (delta) => updateResearchTimers(delta);
+      registerUpdateCallback(updateCallback);
+      isUpdateCallbackRegistered = true;
+    }
+  }
+}
+
+// The global update callback that ticks all active researches
+function updateResearchTimers(deltaMs) {
+  const deltaSeconds = deltaMs / 1000;
+  let anyResearchActive = false;
+
+  for (const key in state.research) {
+    const rs = state.research[key];
+    const def = researchData[key];
+
+    if (rs.researching && !rs.completed) {
+      anyResearchActive = true;
+      rs.remainingTime -= deltaSeconds;
+      if (rs.remainingTime <= 0) {
+        rs.remainingTime = 0;
+        rs.researching = false;
+        rs.completed = true;
+
+        console.log(`${def.name} research complete!`);
+
+        if (!def.toggleable && typeof def.effect === "function") {
+          def.effect(state);
+        }
+      }
+    }
+  }
+
+  // If no research active, unregister this update callback to save CPU
+  if (!anyResearchActive && isUpdateCallbackRegistered) {
+    unregisterUpdateCallback(updateCallback);
+    isUpdateCallbackRegistered = false;
+    updateCallback = null;
   }
 }
 
 // Resume active research timers (after loading)
 export function resumeActiveResearch() {
+  let anyResearchActive = false;
+
   for (const key in state.research) {
     const researchState = state.research[key];
     const researchDef = researchData[key];
@@ -105,18 +112,22 @@ export function resumeActiveResearch() {
           if (!researchDef.toggleable && typeof researchDef.effect === "function") {
             researchDef.effect(state);
           }
-          continue; // no need to start timer
+          continue; // no need to track further
         }
       }
 
       // Update lastUpdated to now
       researchState.lastUpdated = now;
 
-      // Start the countdown timer with updated remainingTime
-      startResearchCountdown(key);
-
-      console.log(`Resumed ${researchDef.name} research timer with ${researchState.remainingTime}s remaining.`);
+      anyResearchActive = true;
     }
+  }
+
+  // Register global update callback if any research is active
+  if (anyResearchActive && !isUpdateCallbackRegistered) {
+    updateCallback = (delta) => updateResearchTimers(delta);
+    registerUpdateCallback(updateCallback);
+    isUpdateCallbackRegistered = true;
   }
 }
 

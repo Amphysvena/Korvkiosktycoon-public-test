@@ -6,7 +6,7 @@ export const researchData = {
   description: "AI-controlled sausage fryer.",
   cost: 10,
   duration: 30,
-  effectAmount: 1, 
+  effectAmount: 1, //the amount to display in kiosktab. It is divided by effectInterval
   effect: (state) => {
     state.korv += 1;
     if (state.korv > state.korvtak) state.korv = state.korvtak;
@@ -44,13 +44,22 @@ export const researchData = {
   },
 
   condimentsMachine : {
-  name: "Condiments Machine",
-  img: "Research4-Condimentmachine.png",
-  description: "A machine that applies condiments to sausages. Faster, more powerful and accurate than any human.",
-  cost: 1500,
-  duration: 360,
-  criteria: (state) => state.recipes.recipe2?.completed === true,
-  effect:false, //add 50 korv per second
-  toggleable: 'condimentsMachineActive'
-  }
-};
+    name: "Condiments Machine",
+    img: "Research4-Condimentmachine.png",
+    description: "A machine that applies condiments to sausages. Faster, more powerful and accurate than any human.",
+    cost: 1500,
+    duration: 360,
+    effectAmount: 50, //the amount to display in kiosktab. It is divided by effectInterval
+    toggleable: 'condimentsMachineActive',
+    criteria: (state) => state.recipes.recipe2?.completed === true,
+    effectInterval: 1000, // 1000 ms = 1 second
+    
+    effect: (state) => {
+      // Add 50 korv per second when active
+      if (state.condimentsMachineActive) {
+        state.korv += 50;
+        if (state.korv > state.korvtak) state.korv = state.korvtak;
+      }
+    }
+  } 
+}; 

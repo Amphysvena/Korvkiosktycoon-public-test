@@ -75,7 +75,8 @@ for (const key in researchData) {
     unlocked: false,
     researching: false,
     remainingTime: researchData[key].duration,
-    completed: false
+    completed: false,
+    _accumulator: 0
   };
 }
 

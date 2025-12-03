@@ -45,7 +45,6 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'kiosk-button';
-    
 
     button.innerHTML = `
       <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/research/${researchDef.img}" 
@@ -66,7 +65,8 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
       if (researchState.researching) {
         button.disabled = true;
         button.style.opacity = '0.5';
-        timerText.textContent = `${researchState.remainingTime}s`;
+        // Round up remainingTime here
+        timerText.textContent = `${Math.ceil(researchState.remainingTime)}s`;
         updateRightPanelTimer(key, researchState.remainingTime);
       } else if (!researchState.completed) {
         button.disabled = false;
@@ -138,7 +138,8 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
       infoRight.appendChild(timerRow);
     }
     const name = researchData[key].name || key;
-    timerRow.textContent = `${name}: ${remainingTime}s`;
+    // Round up remainingTime here as well
+    timerRow.textContent = `${name}: ${Math.ceil(remainingTime)}s`;
   }
 
   function removeRightPanelTimer(key) {
