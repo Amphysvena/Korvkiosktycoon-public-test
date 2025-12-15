@@ -2,7 +2,10 @@
 import { state } from '../state.js';
 import { buildingData } from '../data/buildingData.js';
 
-export function startBuildingConstruction(key, updateButton, updateMainScreenCount) {
+/**
+ * Called once when player starts a building
+ */
+export function startBuildingConstruction(key) {
   const b = state.buildings[key];
   const def = buildingData[key];
   if (!b || !def) return;
@@ -10,34 +13,41 @@ export function startBuildingConstruction(key, updateButton, updateMainScreenCou
 
   b.constructing = true;
   b.remainingTime = def.duration;
-
-  // Avoid duplicate timers
-  if (b._activeTimer) clearInterval(b._activeTimer);
-
-  b._activeTimer = setInterval(() => {
-    b.remainingTime--;
-    if (updateButton) updateButton();
-
-    if (b.remainingTime <= 0) {
-      clearInterval(b._activeTimer);
-      b._activeTimer = null;
-      b.constructing = false;
-      b.count++;
-      if (def.effect) def.effect(state);
-      console.log(`${key} constructed! Count: ${b.count}`);
-      if (updateButton) updateButton();
-      if (updateMainScreenCount) updateMainScreenCount();
-    }
-  }, 1000);
 }
 
-export function resumeActiveBuildings() {
+/**
+ * Called every frame by the global game loop
+ * delta = milliseconds since last tick
+ */
+export function updateBuildings(delta) {
+  const dt = delta / 1000; // convert ms → seconds
+
   for (const key in state.buildings) {
     const b = state.buildings[key];
     const def = buildingData[key];
-    if (!b.constructing) continue;
-    if (b._activeTimer) continue;
 
-    startBuildingConstruction(key); // same logic, no UI callback
+    if (!b?.constructing) continue;
+
+    b.remainingTime -= dt;
+
+    if (b.remainingTime <= 0) {
+      b.remainingTime = 0;
+      b.constructing = false;
+      b.count = (b.count || 0) + 1;
+
+      if (def?.effect) {
+        def.effect(state);
+      }
+
+      console.log(`${key} constructed! Count: ${b.count}`);
+    }
   }
+}
+
+/**
+ * Called after loading a save
+ * Nothing to "resume" anymore — state already contains timers
+ */
+export function resumeActiveBuildings() {
+  // Intentionally empty
 }

@@ -86,8 +86,11 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
       if (buildingState.constructing) {
         button.disabled = true;
         button.style.opacity = '0.5';
-        timerText.textContent = `${buildingState.remainingTime}s`;
-        updateRightPanelTimer(key, buildingState.remainingTime);
+        
+        const secondsLeft = Math.ceil(buildingState.remainingTime);
+        timerText.textContent = `${secondsLeft}s`;
+        updateRightPanelTimer(key, secondsLeft);
+
       } else {
         button.disabled = false;
         button.style.opacity = '1';
@@ -171,14 +174,18 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
 
       const buildingDef = buildingData[key];
       const cost = Math.floor(buildingDef.baseCost * Math.pow(buildingDef.growthRate, buildingState.count));
+        if (buildingState.constructing) {
+          const secondsLeft = Math.ceil(buildingState.remainingTime);
 
-      if (buildingState.constructing) {
-        button.disabled = true;
-        button.style.opacity = '0.5';
-        timerText.textContent = `${buildingState.remainingTime}s`;
-        const rightPanelTimer = document.getElementById(`building-timer-${key}`);
-        if (rightPanelTimer) rightPanelTimer.textContent = `${buildingData[key].name}: ${buildingState.remainingTime}s`;
-      } else {
+          button.disabled = true;
+          button.style.opacity = '0.5';
+          timerText.textContent = `${secondsLeft}s`;
+
+          const rightPanelTimer = document.getElementById(`building-timer-${key}`);
+          if (rightPanelTimer)
+            rightPanelTimer.textContent = `${buildingData[key].name}: ${secondsLeft}s`;
+        }
+        else {
         button.disabled = false;
         button.style.opacity = '1';
         timerText.textContent = `${formatCost(cost)} korv`;

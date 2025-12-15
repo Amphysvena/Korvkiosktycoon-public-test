@@ -2,7 +2,8 @@ import { initUI } from './ui.js';
 import { registerUpdateCallback } from './gameLoop.js';
 import { updateBoogie } from './engine/boogieEngine.js';
 import { updateSkills } from './engine/skillsEngine.js';
-import { updateRecipes } from './engine/recipeEngine.js';
+import { updateRecipes } from './engine/recipeEngine.js'
+import { updateBuildings } from './engine/buildingsEngine.js';
 
 
 export function startGame() {
@@ -12,4 +13,5 @@ export function startGame() {
   registerUpdateCallback(updateBoogie);
   registerUpdateCallback(updateSkills);
   registerUpdateCallback(updateRecipes);
+  registerUpdateCallback(updateBuildings);
 }
