@@ -15,7 +15,7 @@
 	6. skillsTab.js and skillsEngine.js. Nothing here either about timers. //seems to work
 	7. recipesTab.js and recipesEngine.js. Here we have crafting timers that need to be looked at. //seems to work
 	8. buildingsTab.js and buildingsEngine.js Here there are buildings with build time. //seems to work 
-	9. The rest of the tabs and engines are mostly empty, but we can look into them here in the end.
+	9. The rest of the tabs and engines are mostly empty, but we can look into them here in the end. //
 
 - korvcounter går på sin egen timer, eventuellt koppla in den nån annanstans? I ui.js
 		setInterval(() => {

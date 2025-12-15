@@ -1,9 +1,10 @@
 import { state } from '../state.js';
 import { researchUnlock, startResearch, finishAllResearchTimers } from '../engine/researchEngine.js';
 import { researchData } from '../data/researchData.js';
+import { registerUpdateCallback, unregisterUpdateCallback } from '../gameLoop.js';
 
-let researchTabTimerInterval = null;  // Holds the setInterval so we can clear it if needed
-const researchButtonsMap = new Map(); // Store button update functions
+let _updateCallback = null;
+const researchButtonsMap = new Map();
 
 export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   // ── Setup main background image ──
@@ -14,18 +15,15 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
     </div>
   `;
 
-  // ── Clear tab and info panels ──
   tabContent.innerHTML = '';
   if (infoLeft) infoLeft.innerHTML = '';
   if (infoRight) infoRight.innerHTML = '<div style="font-size:18px; font-weight:bold;">Active Research</div>';
 
-  // ── Unlock logic ──
+  // Unlock any new research based on criteria
   researchUnlock();
 
-  // Clear previous button references (important for tab switching)
   researchButtonsMap.clear();
 
-  // ── Research container ──
   const researchContainer = document.createElement('div');
   researchContainer.id = 'research-container';
   researchContainer.style.display = 'flex';
@@ -35,8 +33,25 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
   researchContainer.style.alignItems = 'flex-start';
   researchContainer.style.padding = '10px';
 
+  function updateRightPanelTimer(key, remainingTime) {
+    if (!infoRight) return;
+    let timerRow = document.getElementById(`timer-${key}`);
+    if (!timerRow) {
+      timerRow = document.createElement('div');
+      timerRow.id = `timer-${key}`;
+      timerRow.style.fontSize = '14px';
+      timerRow.style.marginTop = '4px';
+      infoRight.appendChild(timerRow);
+    }
+    const name = researchData[key].name || key;
+    timerRow.textContent = `${name}: ${Math.ceil(remainingTime)}s`;
+  }
 
-  // ── Helper: Create a research button ──
+  function removeRightPanelTimer(key) {
+    const row = document.getElementById(`timer-${key}`);
+    if (row) row.remove();
+  }
+
   function createResearchButton(key) {
     const researchState = state.research[key];
     const researchDef = researchData[key];
@@ -65,7 +80,6 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
       if (researchState.researching) {
         button.disabled = true;
         button.style.opacity = '0.5';
-        // Round up remainingTime here
         timerText.textContent = `${Math.ceil(researchState.remainingTime)}s`;
         updateRightPanelTimer(key, researchState.remainingTime);
       } else if (!researchState.completed) {
@@ -118,64 +132,39 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
       updateButton();
     });
 
-    // Save the update function so we can call it in the interval later
     researchButtonsMap.set(key, updateButton);
-
     updateButton();
 
     return button;
   }
 
-  // Right panel timer update helpers
-  function updateRightPanelTimer(key, remainingTime) {
-    if (!infoRight) return;
-    let timerRow = document.getElementById(`timer-${key}`);
-    if (!timerRow) {
-      timerRow = document.createElement('div');
-      timerRow.id = `timer-${key}`;
-      timerRow.style.fontSize = '14px';
-      timerRow.style.marginTop = '4px';
-      infoRight.appendChild(timerRow);
-    }
-    const name = researchData[key].name || key;
-    // Round up remainingTime here as well
-    timerRow.textContent = `${name}: ${Math.ceil(remainingTime)}s`;
-  }
-
-  function removeRightPanelTimer(key) {
-    const row = document.getElementById(`timer-${key}`);
-    if (row) row.remove();
-  }
-
-  // Render buttons
+  // Render research buttons
   for (const key in researchData) {
     const btn = createResearchButton(key);
     if (btn) researchContainer.appendChild(btn);
   }
 
-  // Cheat button
+  // Cheat button to finish all research
   const finishResearchButton = document.createElement('button');
-  finishResearchButton.type = 'button';
-  finishResearchButton.id = 'finishResearchButton';
-  finishResearchButton.textContent = 'Finish Research';
-  finishResearchButton.className = 'kiosk-button';
-  finishResearchButton.style.width = '120px';
-  finishResearchButton.style.height = '40px';
-  finishResearchButton.style.fontSize = '14px';
-  finishResearchButton.addEventListener('click', finishAllResearchTimers);
-  researchContainer.appendChild(finishResearchButton);
+finishResearchButton.type = 'button';
+finishResearchButton.id = 'finishResearchButton';
+finishResearchButton.textContent = 'Finish Research';
+finishResearchButton.className = 'kiosk-button';
+finishResearchButton.style.width = '120px';
+finishResearchButton.style.height = '40px';
+finishResearchButton.style.fontSize = '14px';
+
+// Use the function directly without dynamic import
+finishResearchButton.addEventListener('click', finishAllResearchTimers);
+
+researchContainer.appendChild(finishResearchButton);
 
   tabContent.appendChild(researchContainer);
 
-  // Clear previous interval if exists (important to avoid multiple intervals)
-  if (researchTabTimerInterval) clearInterval(researchTabTimerInterval);
-
-  // Set up the update interval (every second)
-  researchTabTimerInterval = setInterval(() => {
-    // Update all buttons
+  // Register the UI update callback with the main game loop
+  _updateCallback = () => {
     researchButtonsMap.forEach((updateFn) => updateFn());
 
-    // Update the right panel timers for any researching researches
     for (const key in state.research) {
       const rs = state.research[key];
       if (rs.researching && !rs.completed) {
@@ -184,24 +173,17 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
         removeRightPanelTimer(key);
       }
     }
-  }, 1000);
+  };
 
-  // Initial update on render so UI is synced immediately
-  researchButtonsMap.forEach((updateFn) => updateFn());
-  for (const key in state.research) {
-    const rs = state.research[key];
-    if (rs.researching && !rs.completed) {
-      updateRightPanelTimer(key, rs.remainingTime);
-    } else {
-      removeRightPanelTimer(key);
-    }
-  }
+  registerUpdateCallback(_updateCallback);
 
-  // ─── Cleanup function on tab switch ───
+  // Initial UI update
+  _updateCallback();
+
   return () => {
-    if (researchTabTimerInterval) {
-      clearInterval(researchTabTimerInterval);
-      researchTabTimerInterval = null;
+    if (_updateCallback) {
+      unregisterUpdateCallback(_updateCallback);
+      _updateCallback = null;
     }
     researchButtonsMap.clear();
   };
