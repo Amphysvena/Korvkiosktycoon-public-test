@@ -58,8 +58,11 @@ export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }
       if (recipeState.crafting) {
         button.disabled = true;
         button.style.opacity = '0.5';
-        timerText.textContent = `${recipeState.remainingTime}s`;
-        updateRightPanelTimer(key, recipeState.remainingTime);
+        
+        const secondsLeft = Math.ceil(recipeState.remainingTime);
+        timerText.textContent = `${secondsLeft}s`;
+        updateRightPanelTimer(key, secondsLeft);
+
       } else if (!recipeState.completed) {
         button.disabled = false;
         button.style.opacity = '1';
