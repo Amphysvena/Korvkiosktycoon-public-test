@@ -11,9 +11,9 @@
 	2. kioskTab.js and kioskEngine.js just to check, no timers here, only the ui for autofry // should work
 	3. researchTab.js and researchEngine.js, here we have autofry and condiment machine for adding korv and also timers for all the researches. // condiments machine seems to work, but is not displayed correctly // fixed
 	4. equipmentTab.js and equipmentEngine.js, here i think there is only the HP regen code, we will see how it works. //seems to work
-	5. boogieTab.js and boogieEngine.js. I don´t think there is anything here relevant to the gameloop yet. 
-	6. skillsTab.js and skillsEngine.js. Nothing here either about timers. 
-	7. recipesTab.js and recipesEngine.js. Here we have crafting timers that need to be looked at. 
+	5. boogieTab.js and boogieEngine.js. I don´t think there is anything here relevant to the gameloop yet. //seems to work
+	6. skillsTab.js and skillsEngine.js. Nothing here either about timers. //seems to work
+	7. recipesTab.js and recipesEngine.js. Here we have crafting timers that need to be looked at.  -----------> fortsätt här
 	8. buildingsTab.js and buildingsEngine.js Here there are buildings with build time. 
 	9. The rest of the tabs and engines are mostly empty, but we can look into them here in the end.
 
