@@ -56,31 +56,30 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
   });
 
   // --- FUNCTION: update boogie stats (only if infoRight exists) ---
-  function updateBoogieStats() {
-    if (!infoRight) return;
-    const b = state.boogie;
+function updateBoogieStats() {
+  if (!infoRight) return;
+  const b = state.boogie;
 
-    const damageText = b.damageTypes && b.damageTypes.size > 0
-      ? Array.from(b.damageTypes).join(', ')
-      : 'None';
+  const damageKeys = b.damageTypes ? Object.keys(b.damageTypes).filter(key => b.damageTypes[key] > 0) : [];
+  const damageText = damageKeys.length > 0 ? damageKeys.join(', ') : 'None';
 
-    infoRight.innerHTML = `
-      <div style="
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-        height: 100%;
-        text-align: left;
-      ">
-        <div>HP: ${Math.floor(b.currentHP)} / ${Math.floor(b.maxHP)}</div>
-        <div>Attack: ${b.attackPower}</div>
-        <div>Defense: ${b.defense}</div>
-        <div>Damage Types: ${damageText}</div>
-        <div>Status Effects: ${b.statusEffects.length > 0 ? b.statusEffects.join(', ') : 'None'}</div>
-      </div>
-    `;
-  }
+  infoRight.innerHTML = `
+    <div style="
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100%;
+      text-align: left;
+    ">
+      <div>HP: ${Math.floor(b.currentHP)} / ${Math.floor(b.maxHP)}</div>
+      <div>Attack: ${b.attackPower}</div>
+      <div>Defense: ${b.defense}</div>
+      <div>Damage Types: ${damageText}</div>
+      <div>Status Effects: ${b.statusEffects.length > 0 ? b.statusEffects.join(', ') : 'None'}</div>
+    </div>
+  `;
+}
 
   // --- Equip/unequip visual updates ---
   function updateButtonVisual() {
@@ -346,10 +345,9 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
 
     // refresh boogie stats if infoRight exists
     if (infoRight) {
-      const b = state.boogie;
-      const damageText = b.damageTypes && b.damageTypes.size > 0
-        ? Array.from(b.damageTypes).join(', ')
-        : 'None';
+        const b = state.boogie;
+        const damageKeys = b.damageTypes ? Object.keys(b.damageTypes).filter(key => b.damageTypes[key] > 0) : [];
+        const damageText = damageKeys.length > 0 ? damageKeys.join(', ') : 'None';
 
       infoRight.innerHTML = `
         <div style="

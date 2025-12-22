@@ -133,6 +133,12 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
   _updateCallback = () => {
     if (!infoRight) return;
 
+    const damageKeys = state.boogie?.damageTypes
+      ? Object.keys(state.boogie.damageTypes).filter(key => state.boogie.damageTypes[key] > 0)
+      : [];
+
+    const damageText = damageKeys.length > 0 ? damageKeys.join(', ') : 'None';
+
     infoRight.innerHTML = `
       <div style="
         display: flex;
@@ -145,11 +151,7 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
         <div>HP: ${Math.floor(state.boogie?.currentHP ?? 0)} / ${Math.floor(state.boogie?.maxHP ?? 0)}</div>
         <div>Attack: ${state.boogie?.attackPower ?? 0}</div>
         <div>Defense: ${state.boogie?.defense ?? 0}</div>
-        <div>Damage Types: ${
-          state.boogie?.damageTypes && state.boogie.damageTypes.size > 0
-            ? Array.from(state.boogie.damageTypes).join(', ')
-            : 'None'
-        }</div>
+        <div>Damage Types: ${damageText}</div>
         <div>Status Effects: ${
           Array.isArray(state.boogie?.statusEffects) && state.boogie.statusEffects.length > 0
             ? state.boogie.statusEffects.join(', ')

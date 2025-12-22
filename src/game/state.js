@@ -45,7 +45,7 @@ export const state = {
       flat: 0,           // +X regen per second
     },        // Added by equipment/items/etc.
 
-    damageTypes: new Set (),
+    damageTypes: {},
     attackPower: 0,
     defense: 0,
     statusEffects: [], // e.g., poison, burn, freeze

@@ -1,5 +1,19 @@
 import { renderEquipmentTab } from '../ui/equipmentTab.js';
 
+// helper to add and remove damage types from items
+function addDamageType(state, type) {
+  state.boogie.damageTypes[type] = (state.boogie.damageTypes[type] || 0) + 1;
+}
+
+function removeDamageType(state, type) {
+  if (!state.boogie.damageTypes[type]) return;
+  state.boogie.damageTypes[type]--;
+  if (state.boogie.damageTypes[type] <= 0) {
+    delete state.boogie.damageTypes[type];
+  }
+}
+
+
 export const equipmentData = {
   //korvlådor
   plasticBox: {
@@ -32,10 +46,10 @@ export const equipmentData = {
     onEquip: (state) => {
       // Enable korv1, korv2, korv3 to be equipable
       state.equipment.allowedKorvWeapons = ['korv1', 'korv2', 'korv3'];
-      state.boogie.damageTypes.add("cold");
+      addDamageType(state, "cold");
     },
     onUnequip: (state) => {
-      state.boogie.damageTypes.delete("cold");
+      removeDamageType(state, "cold");
       //unequip code later
     }
   },
@@ -51,11 +65,11 @@ export const equipmentData = {
     unlocked: false,
     equipped: false,
     onEquip: (state) => {
-      state.boogie.damageTypes.add("normal");
+      addDamageType(state, "normal");
       state.boogie.attackPower += 1; // modify if equipment gives bonus
     },
     onUnequip: (state) => {
-      state.boogie.damageTypes.delete("normal");
+      removeDamageType(state, "normal");
       state.boogie.attackPower -= 1;
     }
   },
@@ -70,15 +84,15 @@ export const equipmentData = {
     unlocked: false,
     equipped: false,
     onEquip: (state) => {
-      state.boogie.damageTypes.add("normal");
-      state.boogie.damageTypes.add("heat");
-      state.boogie.damageTypes.add("pungent");
+      addDamageType(state, "normal");
+      addDamageType(state, "heat");
+      addDamageType(state, "pungent");
       state.boogie.attackPower += 2; // modify if equipment gives bonus
     },
     onUnequip: (state) => {
-      state.boogie.damageTypes.delete("normal");
-      state.boogie.damageTypes.delete("heat");
-      state.boogie.damageTypes.delete("pungent");
+      removeDamageType(state, "normal");
+      removeDamageType(state, "heat");
+      removeDamageType(state, "pungent");
       state.boogie.attackPower -= 2;
     }
   },
@@ -93,16 +107,16 @@ export const equipmentData = {
     unlocked: false,
     equipped: false,
     onEquip: (state) => {
-      state.boogie.damageTypes.add("normal");
-      state.boogie.damageTypes.add("heat");
-      state.boogie.damageTypes.add("pungent");
+      addDamageType(state, "normal");
+      addDamageType(state, "heat");
+      addDamageType(state, "pungent");
       state.boogie.attackPower += 3; // modify if equipment gives bonus
       //hp regen +1 per 5
     },
     onUnequip: (state) => {
-      state.boogie.damageTypes.delete("normal");
-      state.boogie.damageTypes.delete("heat");
-      state.boogie.damageTypes.delete("pungent");
+      removeDamageType(state, "normal");
+      removeDamageType(state, "heat");
+      removeDamageType(state, "pungent");
       state.boogie.attackPower -= 3;
       //remove hp regen +1 per 5
     }
@@ -117,12 +131,11 @@ export const equipmentData = {
     itemDescription:'The Thin Red Line.',
     toggleable: true,
     onEquip: (state) => {
-      state.boogie.damageTypes.add("heat");
+      addDamageType(state, "heat");
     },
     onUnequip: (state) => {
-      state.boogie.damageTypes.delete("heat");
+      removeDamageType(state, "heat");
     }
-
   },
 
   senap: {
@@ -133,13 +146,11 @@ export const equipmentData = {
     itemDescription: 'Castle-grade mustard.',
     toggleable: true,
     onEquip: (state) => {
-      state.boogie.damageTypes.add("pungent");
+      addDamageType(state, "pungent");
     },
     onUnequip: (state) => {
-      state.boogie.damageTypes.delete("pungent");
+      removeDamageType(state, "pungent");
     }
-
-
   },
 
   bostongurka: {
@@ -150,13 +161,12 @@ export const equipmentData = {
     itemDescription:'Agurken straight outta Boston.',
     toggleable: true,
     onEquip: (state) => {
-    state.boogie.regenBonuses['bostongurka'] = 1 / 5; // +1 HP per 5 seconds (0.2 per sec)
+      state.boogie.regenBonuses['bostongurka'] = 1 / 5; // +1 HP per 5 seconds (0.2 per sec)
+    },
+    onUnequip: (state) => {
+      delete state.boogie.regenBonuses['bostongurka'];
+    }
   },
-  onUnequip: (state) => {
-    delete state.boogie.regenBonuses['bostongurka'];
-  }
-},
-
 
   //hattar
   topphatt: {
@@ -172,7 +182,6 @@ export const equipmentData = {
     onUnequip: (state) => {
       state.boogie.maxHP -= 10;      
     }
-
   },
 
   pilgrimshatt: {
@@ -188,7 +197,6 @@ export const equipmentData = {
     onUnequip: (state) => {
       state.boogie.maxHP -= 50;      
     }
-
   }
 };
 

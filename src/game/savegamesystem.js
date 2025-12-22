@@ -56,13 +56,9 @@ export function importSave(file) {
 
       // --- Restore Sets inside boogie object ---
       if (state.boogie) {
-        // Restore damageTypes
-        if (Array.isArray(state.boogie.damageTypes)) {
-          state.boogie.damageTypes = new Set(state.boogie.damageTypes);
-        } else if (state.boogie.damageTypes && state.boogie.damageTypes.__type === 'Set') {
-          state.boogie.damageTypes = new Set(state.boogie.damageTypes.values || []);
-        } else if (!(state.boogie.damageTypes instanceof Set)) {
-          state.boogie.damageTypes = new Set();
+        // damageTypes is now an object with counts, so restore as object or default empty object
+        if (typeof state.boogie.damageTypes !== 'object' || state.boogie.damageTypes === null) {
+          state.boogie.damageTypes = {};
         }
 
         // ✅ Restore defeatedEnemies too
