@@ -130,20 +130,22 @@ export function resumeActiveResearch() {
     isUpdateCallbackRegistered = true;
   }
 }
+function updateResearchPassiveEffects(deltaMs) {
+  for (const key in researchData) {
+    const def = researchData[key];
+    const rs = state.research[key];
 
-// Setup passive effects for researches with effectInterval (unchanged)
-for (const key in researchData) {
-  const researchDef = researchData[key];
+    if (!rs.completed) continue;
+    if (!def.effectInterval || typeof def.effect !== "function") continue;
 
-  if (researchDef.effect && researchDef.effectInterval) {
-    setInterval(() => {
-      const rs = state.research[key];
-      if (!rs.completed) return;
+    if (def.toggleable && !state[def.toggleable]) continue;
 
-      if (researchDef.toggleable && !state[researchDef.toggleable]) return;
+    rs._accumulator += deltaMs;
 
-      researchDef.effect(state);
-    }, researchDef.effectInterval);
+    while (rs._accumulator >= def.effectInterval) {
+      rs._accumulator -= def.effectInterval;
+      def.effect(state);
+    }
   }
 }
 
@@ -158,4 +160,9 @@ export function finishAllResearchTimers() {
       console.log(`${key} set to 1 second remaining`);
     }
   }
+}
+
+export function updateResearch(deltaMs) {
+  updateResearchTimers(deltaMs);
+  updateResearchPassiveEffects(deltaMs);
 }

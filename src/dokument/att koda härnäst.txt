@@ -3,7 +3,7 @@
 	- condiments machine grafik i kiosk main screen // rudimentär
 	- kod för att condiments machine ska visas i main screen
 
-- refactor autofry to use global interval
+- refactor autofry to use global interval //
 
 - refactor state.js så att allt importeras som research gör
 
