@@ -240,11 +240,6 @@ export function initUI() {
   switchTab(tabs[0].id);
 }
 
-// ─── Auto-update korv counter every second ───
-setInterval(() => {
-  updateKorvCounter(state.korv);
-}, 1000);
-
 function updateTabs() {
   tabs.forEach(tab => {});
   tabButtons.innerHTML = '';
@@ -258,6 +253,8 @@ function updateTabs() {
     tabButtons.appendChild(btn);
   });
 }
+
+registerUpdateCallback(updateKorvCounter);
 
 export function updateKorvCounter() {
   if (korvCounterEl) {

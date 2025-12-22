@@ -5,7 +5,6 @@ import { updateSkills } from './engine/skillsEngine.js';
 import { updateRecipes } from './engine/recipeEngine.js'
 import { updateBuildings } from './engine/buildingsEngine.js';
 
-
 export function startGame() {
   initUI();
 
@@ -14,4 +13,5 @@ export function startGame() {
   registerUpdateCallback(updateSkills);
   registerUpdateCallback(updateRecipes);
   registerUpdateCallback(updateBuildings);
+ 
 }

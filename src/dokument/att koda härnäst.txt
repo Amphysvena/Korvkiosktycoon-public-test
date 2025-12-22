@@ -3,24 +3,7 @@
 	- condiments machine grafik i kiosk main screen // rudimentär
 	- kod för att condiments machine ska visas i main screen
 
-- create global interval timer game loop (we have callback for ui already need to refactor) //
 - refactor autofry to use global interval
-- refactor all tabs to use global interval (missed research last time)
-	Our plan is now to go through each tab and engine to hook it up to the gameloop. We will do it in this order, one at a time.
-	1. ui.js to see that the gameloop does not interfer with the 30 hertz ui update.  // should work
-	2. kioskTab.js and kioskEngine.js just to check, no timers here, only the ui for autofry // should work
-	3. researchTab.js and researchEngine.js, here we have autofry and condiment machine for adding korv and also timers for all the researches. // condiments machine seems to work, but is not displayed correctly // fixed
-	4. equipmentTab.js and equipmentEngine.js, here i think there is only the HP regen code, we will see how it works. //seems to work
-	5. boogieTab.js and boogieEngine.js. I don´t think there is anything here relevant to the gameloop yet. //seems to work
-	6. skillsTab.js and skillsEngine.js. Nothing here either about timers. //seems to work
-	7. recipesTab.js and recipesEngine.js. Here we have crafting timers that need to be looked at. //seems to work
-	8. buildingsTab.js and buildingsEngine.js Here there are buildings with build time. //seems to work 
-	9. The rest of the tabs and engines are mostly empty, but we can look into them here in the end. //
-
-- korvcounter går på sin egen timer, eventuellt koppla in den nån annanstans? I ui.js
-		setInterval(() => {
-		  updateKorvCounter(state.korv);
-		}, 1000);
 
 - refactor state.js så att allt importeras som research gör
 
