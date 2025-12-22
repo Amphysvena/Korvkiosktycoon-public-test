@@ -110,15 +110,15 @@ export const equipmentData = {
       addDamageType(state, "normal");
       addDamageType(state, "heat");
       addDamageType(state, "pungent");
-      state.boogie.attackPower += 3; // modify if equipment gives bonus
-      //hp regen +1 per 5
+      state.boogie.attackPower += 3; 
+      state.boogie.regenBonuses['korv3'] = 1 / 5; // +1 HP per 5 seconds (0.2 per sec)
     },
     onUnequip: (state) => {
       removeDamageType(state, "normal");
       removeDamageType(state, "heat");
       removeDamageType(state, "pungent");
       state.boogie.attackPower -= 3;
-      //remove hp regen +1 per 5
+      delete state.boogie.regenBonuses['korv3'];
     }
   },
 

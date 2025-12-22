@@ -5,12 +5,8 @@
 
 - refactor state.js så att allt importeras som research gör
 
-- Gör så att en damagetype bara tas bort om det är sista källan av den skadetypen. Varje effekt ska vara "persistent" när ett föremål är equippat. //
-	- ändra equipmentkod
-	- ändra uikod i equipment
-	- ändra uikod i boogie
 
-- korv3 ska få regenkod
+- korv3 ska få regenkod //
 
 - refactor all ui-kod i uifilerna, all spelkod i Enginefilerna. 
 
