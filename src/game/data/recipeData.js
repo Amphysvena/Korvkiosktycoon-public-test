@@ -8,7 +8,7 @@ export const recipeData = {
     recipe1: {
         name: 'Recipe for sausage with ketchup and mustard.',
         description: 'Esoteric knowledge concerning ancient sausage techniques. It seems to be over 400 years old.',
-        img: 'src/game/Assets/img/recept/recipe-frame-0-.png',
+        img: 'src/game/assets/img/recept/recipe-frame-0-.png',
         cost: 750,
         duration: 60, 
                 
@@ -17,7 +17,7 @@ export const recipeData = {
     recipe2: {
         name: 'Recipe for sausage with everything on it.',
         description: 'Esoteric knowledge concerning secret sausage techniques. It seems to be over 70 years old.',
-        img: 'src/game/Assets/img/recept/recipe-frame-0-.png',
+        img: 'src/game/assets/img/recept/recipe-frame-0-.png',
         cost: 1, //10000 ändra tillbaka senare
         duration: 10, //900, ändra tillbaka senare
                 

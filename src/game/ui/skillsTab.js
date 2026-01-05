@@ -24,7 +24,7 @@ export function renderSkillsTab({ tabContent, mainScreen, infoLeft, infoRight })
     btn.type = 'button';
     btn.className = 'kiosk-button';
     btn.innerHTML = `
-      <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/skills/${skillDef.img}" 
+      <img src="${KorvkioskData.pluginUrl}src/game/assets/img/skills/${skillDef.img}" 
            alt="${skillDef.name}" 
            style="width:64px; height:64px;">
     `;

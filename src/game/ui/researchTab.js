@@ -10,7 +10,7 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
   // ── Setup main background image ──
   mainScreen.innerHTML = `
     <div style="display:flex; justify-content:center; align-items:center; height:100%;">
-      <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/research/researchmainscreen.gif"
+      <img src="${KorvkioskData.pluginUrl}src/game/assets/img/research/researchmainscreen.gif"
            style="max-height:auto; max-width:auto;">
     </div>
   `;
@@ -62,7 +62,7 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
     button.className = 'kiosk-button';
 
     button.innerHTML = `
-      <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/research/${researchDef.img}" 
+      <img src="${KorvkioskData.pluginUrl}src/game/assets/img/research/${researchDef.img}" 
            alt="${researchDef.name}" 
            style="width:64px; height:64px;">
     `;

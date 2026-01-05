@@ -1,4 +1,4 @@
-import Decimal from 'break_infinity.js';
+//import Decimal from 'break_infinity.js'; //not used and buggy with new html setup.
 import { researchData } from './data/researchData.js';
 import { recipeData } from './data/recipeData.js';
 import { buildingData } from './data/buildingData.js';

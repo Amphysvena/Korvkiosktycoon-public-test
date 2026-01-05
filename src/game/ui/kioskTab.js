@@ -26,7 +26,7 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
   wrapper.style.height = '400px';
 
   const baseImg = document.createElement('img');
-  baseImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/korvkioskmainscreen-inprogress.gif`;
+  baseImg.src = `${KorvkioskData.pluginUrl}src/game/assets/img/kiosk/korvkioskmainscreen-inprogress.gif`;
   baseImg.style.display = 'block';
   baseImg.style.width = '740px';
   baseImg.style.height = '400px';
@@ -35,10 +35,10 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
   // ── Optional overlays ──
   const imagesToShow = [];
   if (state.research.autoFry && state.research.autoFry.unlocked && !state.autoFryActive) {
-    imagesToShow.push(`${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/autofry.png`);
+    imagesToShow.push(`${KorvkioskData.pluginUrl}src/game/assets/img/kiosk/autofry.png`);
   }
   if (state.autoFryActive) {
-    imagesToShow.push(`${KorvkioskData.pluginUrl}src/game/Assets/img/kiosk/autofryactive.gif`);
+    imagesToShow.push(`${KorvkioskData.pluginUrl}src/game/assets/img/kiosk/autofryactive.gif`);
   }
 
   imagesToShow.forEach(src => {

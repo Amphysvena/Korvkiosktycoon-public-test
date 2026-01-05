@@ -18,7 +18,7 @@ export const equipmentData = {
   //korvlådor
   plasticBox: {
     name: "Plastlåda",
-    img: "src/game/Assets/img/equipment/korvlador/Korvlada1-plastladavarmkorv.png",
+    img: "src/game/assets/img/equipment/korvlador/Korvlada1-plastladavarmkorv.png",
     effectDescription: "Can cook some basic sausage types.",
     itemDescription: "An old laundry box repurposed for sausage creation. The boiling water smells like detergent.",
     slot: "korvBox", 
@@ -38,7 +38,7 @@ export const equipmentData = {
 
   fishBox: {
     name: "Fisklåda",
-    img: "src/game/Assets/img/research/Research3-fisklåda.png",
+    img: "src/game/assets/img/research/Research3-fisklåda.png",
     effectDescription: "Makes sausages edible by freezing.",
     itemDescription: "An unlocked freezing compartment in the old laundry box. Who put this there?",
     slot: "korvBox",
@@ -57,7 +57,7 @@ export const equipmentData = {
   //Primary Hand
   korv1: {
     name: "Kokt korv med bröd",
-    img: "src/game/Assets/img/equipment/Korvknappar/korv1.png",
+    img: "src/game/assets/img/equipment/Korvknappar/korv1.png",
     slot: "primaryHand",
     effectDescription: "A basic sausage with nothing on it.",
     itemDescription: "A lukewarm sausage in mushy bread. No condiments.",
@@ -76,7 +76,7 @@ export const equipmentData = {
 
   korv2: {
     name: "Kokt korv med bröd, ketchup och senap",
-    img: 'src/game/Assets/img/equipment/Primary Hand/primaryhand 2 - kokt korv med bröd,ketchup,senap.png',
+    img: 'src/game/assets/img/equipment/Primary Hand/primaryhand 2 - kokt korv med bröd,ketchup,senap.png',
     slot: "primaryHand",
     effectDescription: "A sausage with ketchup and mustard on it.",
     itemDescription: "A lukewarm sausage in mushy bread with ketchup and mustard on it.",
@@ -99,7 +99,7 @@ export const equipmentData = {
 
   korv3: {
     name: "Kokt korv med allt",
-    img: 'src/game/Assets/img/equipment/Primary Hand/primaryhand 3 - kokt korv med bröd alla ingredienser.png',
+    img: 'src/game/assets/img/equipment/Primary Hand/primaryhand 3 - kokt korv med bröd alla ingredienser.png',
     slot: "primaryHand",
     effectDescription: "A sausage with everything on it.",
     itemDescription: "A lukewarm sausage in mushy bread with everything on it.",
@@ -125,7 +125,7 @@ export const equipmentData = {
   //Secondary Hand
   ketchup: {
     name: 'Phoenix Ketchup ',
-    img: 'src/game/Assets/img/equipment/Secondary hand/Secondary hand 1 - ketchup.png',
+    img: 'src/game/assets/img/equipment/Secondary hand/Secondary hand 1 - ketchup.png',
     slot: 'secondaryHand',
     effectDescription: 'Adds heat to the sausage.',
     itemDescription:'The Thin Red Line.',
@@ -140,7 +140,7 @@ export const equipmentData = {
 
   senap: {
     name:'Senap',
-    img: 'src/game/Assets/img/equipment/Secondary hand/Secondary hand 2 - senap.png',
+    img: 'src/game/assets/img/equipment/Secondary hand/Secondary hand 2 - senap.png',
     slot: 'secondaryHand',
     effectDescription: 'Adds a pungent taste to the sausage.',
     itemDescription: 'Castle-grade mustard.',
@@ -155,7 +155,7 @@ export const equipmentData = {
 
   bostongurka: {
     name: 'Phoenix Bostongurka',
-    img: 'src/game/Assets/img/equipment/Secondary hand/Secondary hand 3 - bostongurka.png',
+    img: 'src/game/assets/img/equipment/Secondary hand/Secondary hand 3 - bostongurka.png',
     slot: 'secondaryHand',
     effectDescription: 'Adds a revitalizing taste to the sausage.',
     itemDescription:'Agurken straight outta Boston.',
@@ -171,7 +171,7 @@ export const equipmentData = {
   //hattar
   topphatt: {
     name: 'Topphatt',
-    img: 'src/game/Assets/img/equipment/Hatt/Hatt 1 - Topphatt.png',
+    img: 'src/game/assets/img/equipment/Hatt/Hatt 1 - Topphatt.png',
     slot: 'hatt',
     effectDescription: 'Covers your ears somewhat from bullshit.',
     itemDescription:'The top of the crop of hats. Now we are talking!',
@@ -186,7 +186,7 @@ export const equipmentData = {
 
   pilgrimshatt: {
     name: 'Pilgrimshatt',
-    img: 'src/game/Assets/img/equipment/Hatt/Hatt 2 - Pilgrimshatt.png',
+    img: 'src/game/assets/img/equipment/Hatt/Hatt 2 - Pilgrimshatt.png',
     slot: 'hatt',
     effectDescription: 'Shield yourself from bullshit with your own bullshit.',
     itemDescription:'In pristine condition, almost as if it blesse by some entity.',

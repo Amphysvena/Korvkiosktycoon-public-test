@@ -54,7 +54,7 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
     btn.className = 'kiosk-button';
 
     btn.innerHTML = `
-      <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/${enemy.img}" 
+      <img src="${KorvkioskData.pluginUrl}src/game/assets/img/boogie/${enemy.img}" 
            alt="${enemy.name}" 
            style="width:64px; height:64px;">
     `;

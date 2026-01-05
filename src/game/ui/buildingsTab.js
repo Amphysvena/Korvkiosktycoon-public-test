@@ -27,7 +27,7 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
   wrapper.style.height = '400px';
 
   const mainImg = document.createElement('img');
-  mainImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/building/buildingmainscreen.png`;
+  mainImg.src = `${KorvkioskData.pluginUrl}src/game/assets/img/building/buildingmainscreen.png`;
   mainImg.style.width = '740px';
   mainImg.style.height = '400px';
   mainImg.style.display = 'block';
@@ -63,7 +63,7 @@ export function renderBuildingsTab({ tabContent, mainScreen, infoLeft, infoRight
     button.style.position = 'relative';
     button.style.margin = '5px';
 
-    const imgPath = `${KorvkioskData.pluginUrl.replace(/\/$/, '')}/${buildingDef.img || 'src/game/Assets/img/building/default.png'}`;
+    const imgPath = `${KorvkioskData.pluginUrl.replace(/\/$/, '')}/${buildingDef.img || 'src/game/assets/img/building/default.png'}`;
     button.innerHTML = `<img src="${imgPath}" alt="${buildingDef.name}" style="width:64px; height:64px;">`;
 
     // Timer text overlay

@@ -27,7 +27,7 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
   button.className = 'kiosk-button';
 
   const buttonImg = document.createElement('img');
-  buttonImg.src = `${KorvkioskData.pluginUrl}${equipmentDef.img}`;
+  buttonImg.src = `${KorvkioskData.pluginUrl}${equipmentDef.img}`;  //fix this
   buttonImg.style.width = '64px';
   buttonImg.style.height = '64px';
   buttonImg.style.display = 'block';
@@ -94,7 +94,7 @@ function updateBoogieStats() {
       slotDiv.src = `${KorvkioskData.pluginUrl}${equipmentDef.img}`;
       slotDiv.style.opacity = '1';
     } else {
-      slotDiv.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`;
+      slotDiv.src = `${KorvkioskData.pluginUrl}src/game/assets/img/boogie/duelframe0.png`;
       slotDiv.style.opacity = '0.5';
     }
   }
@@ -129,7 +129,7 @@ function updateBoogieStats() {
         // reset the visual on the corresponding slot
         const otherSlotImg = document.querySelector(`#slot-${equipmentData[k].slot} img`);
         if (otherSlotImg) {
-          otherSlotImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`;
+          otherSlotImg.src = `${KorvkioskData.pluginUrl}src/game/assets/img/boogie/duelframe0.png`;
           otherSlotImg.style.opacity = '0.5';
         }
 
@@ -243,7 +243,7 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
       img.src = `${KorvkioskData.pluginUrl}${equipmentData[equippedItem].img}`;
       img.style.opacity = '1';
     } else {
-      img.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`;
+      img.src = `${KorvkioskData.pluginUrl}src/game/assets/img/boogie/duelframe0.png`;
       img.style.opacity = '0.5';
     }
 
@@ -265,7 +265,7 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
         slotImg.src = `${KorvkioskData.pluginUrl}${equipmentData[equippedItemKey].img}`;
         slotImg.style.opacity = '1';
       } else {
-        slotImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`;
+        slotImg.src = `${KorvkioskData.pluginUrl}src/game/assets/img/boogie/duelframe0.png`;
         slotImg.style.opacity = '0.5';
       }
     }
@@ -338,7 +338,7 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
         slotImg.src = `${KorvkioskData.pluginUrl}${equipmentData[equippedItem].img}`;
         slotImg.style.opacity = '1';
       } else {
-        slotImg.src = `${KorvkioskData.pluginUrl}src/game/Assets/img/boogie/duelframe0.png`;
+        slotImg.src = `${KorvkioskData.pluginUrl}src/game/assets/img/boogie/duelframe0.png`;
         slotImg.style.opacity = '0.5';
       }
     }
