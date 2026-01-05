@@ -1,0 +1,17 @@
+- recipe 2 craftad ska unlock condiments machine //
+	- condiments machine logic //
+	- condiments machine grafik i kiosk main screen // rudimentär
+	- kod för att condiments machine ska visas i main screen
+
+- refactor state.js så att allt importeras som research gör
+
+
+- korv3 ska få regenkod //
+
+- refactor all ui-kod i uifilerna, all spelkod i Enginefilerna. 
+
+- kolla så att sparfilerna funkar // kontinuerligt efter varje ändring som kan påverka
+
+- Se till att alla kostnader och timers är på rätt nivå och inte debuginställning
+
+- gör om all matematik till att använda break_infinity? // Nej, man kan börja använda det efter E15. Men försök hålla under det. Ingen poäng med höga siffror just because.
