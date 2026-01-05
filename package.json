@@ -1,0 +1,28 @@
+{
+  "name": "korvkiosktycoon",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ruben",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^7.0.0"
+  },
+  "dependencies": {
+    "break_infinity.js": "^2.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Amphysvena/Korvkiosktycoon.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/Amphysvena/Korvkiosktycoon/issues"
+  },
+  "homepage": "https://github.com/Amphysvena/Korvkiosktycoon#readme",
+  "description": ""
+}
