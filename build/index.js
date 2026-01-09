@@ -94,7 +94,7 @@ function ke(t){return t&&t.__esModule&&Object.prototype.hasOwnProperty.call(t,"d
         <div>Damage Types: ${d}</div>
         <div>Status Effects: ${Array.isArray(o.boogie?.statusEffects)&&o.boogie.statusEffects.length>0?o.boogie.statusEffects.join(", "):"None"}</div>
       </div>
-    `},q(K);function m(){K&&(A(K),K=null)}return te=m,K(),m}const Fe={throw:{name:"Throw",img:"Skill 1 - Throw.png",description:"Throw the sausage very hard."}};let O=null;function ze({tabContent:t,mainScreen:e,infoLeft:n,infoRight:i}){t.innerHTML="",n&&(n.innerHTML=""),i&&(i.innerHTML='<div style="font-size:18px; font-weight:bold;">Unlocked Skills To be changed</div>');const r=document.createElement("div");t.appendChild(r);for(const[c,m]of Object.entries(o.skills)){if(!m.unlocked)continue;const p=Fe[c];if(!p)continue;const d=document.createElement("button");d.type="button",d.className="kiosk-button",d.innerHTML=`
+    `},q(K);function m(){K&&(A(K),K=null)}return te=m,K(),m}const Fe={throw:{name:"Throw",img:"skill 1 - Throw.png",description:"Throw the sausage very hard."}};let O=null;function ze({tabContent:t,mainScreen:e,infoLeft:n,infoRight:i}){t.innerHTML="",n&&(n.innerHTML=""),i&&(i.innerHTML='<div style="font-size:18px; font-weight:bold;">Unlocked Skills To be changed</div>');const r=document.createElement("div");t.appendChild(r);for(const[c,m]of Object.entries(o.skills)){if(!m.unlocked)continue;const p=Fe[c];if(!p)continue;const d=document.createElement("button");d.type="button",d.className="kiosk-button",d.innerHTML=`
       <img src="${KorvkioskData.pluginUrl}src/game/Assets/img/skills/${p.img}" 
            alt="${p.name}" 
            style="width:64px; height:64px;">
