@@ -38,7 +38,7 @@ const tabs = [
   { id: 'research', name: 'Research', render: renderResearchTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/research/beaker-frame-0.png`},
   { id: 'equipment', name: 'Equipment', render: renderEquipmentTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/equipment/equipment frame 0.png`},
   { id: 'boogie', name: 'Boogie', render: renderBoogieTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/boogie/duelframe0.png` },
-  { id: 'skills', name: 'Skills', render: renderSkillsTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/Skills/Skill 1 - Throw.png` },
+  { id: 'skills', name: 'Skills', render: renderSkillsTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/Skills/skill 1 - Throw.png` },
   { id: 'recipes', name: 'Recipes', render: renderRecipesTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/recept/recipe-frame-0-.png` },
   { id: 'buildings', name: 'Buildings', render: renderBuildingsTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/building/building upgrade frame 0.png` },
   { id: 'factory', name: 'Factory', render: renderFactoryTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/fabrik/fabrik frame 0.png` },
