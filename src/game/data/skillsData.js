@@ -1,7 +1,7 @@
 export const skillData = {
     throw: {
     name: "Throw",
-    img: "skill 1 - Throw.png",
+    img: "skill 1 - throw.png",
     description: "Throw the sausage very hard."  
     }
 }
