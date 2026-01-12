@@ -4,6 +4,12 @@ import { registerUpdateCallback, unregisterUpdateCallback } from '../ui.js';
 
 let _updateCallback = null;
 
+//button img source helper
+function skillAsset(filename) {
+  return new URL(`../../game/assets/img/skills/${filename}`, import.meta.url).href;
+}
+
+
 export function renderSkillsTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   tabContent.innerHTML = '';
 
@@ -24,7 +30,7 @@ export function renderSkillsTab({ tabContent, mainScreen, infoLeft, infoRight })
     btn.type = 'button';
     btn.className = 'kiosk-button';
     btn.innerHTML = `
-      <img src="${KorvkioskData.pluginUrl}src/game/assets/img/skills/${skillDef.img}" 
+      <img src="${skillAsset(skillDef.img)}"
            alt="${skillDef.name}" 
            style="width:64px; height:64px;">
     `;

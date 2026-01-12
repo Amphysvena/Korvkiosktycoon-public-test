@@ -5,12 +5,17 @@ import { startRecipeCraft } from '../engine/recipeEngine.js';
 
 let _updateCallback = null;
 
+//button img source helper
+function recipeAsset(path) {
+  return new URL(`../${path}`, import.meta.url).href;
+}
+
 export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   // ── Setup main background image ──
   mainScreen.innerHTML = `
     <div style="display:flex; justify-content:center; align-items:center; height:100%;">
-      <img src="${KorvkioskData.pluginUrl}src/game/assets/img/recept/recipesmainscreen.png"
-           style="max-height:auto; max-width:auto;">
+      <img src="${recipeAsset('assets/img/recept/recipesmainscreen.png')}"
+      style="max-height:auto; max-width:auto;">
     </div>
   `;
 
@@ -40,9 +45,9 @@ export function renderRecipesTab({ tabContent, mainScreen, infoLeft, infoRight }
     button.style.margin = '5px';
 
     button.innerHTML = `
-      <img src="${KorvkioskData.pluginUrl}${recipeDef.img}" //fixa?
-           alt="${recipeDef.name}" 
-           style="width:64px; height:64px;">
+      <img src="${recipeAsset(recipeDef.img)}"
+       alt="${recipeDef.name}" 
+       style="width:64px; height:64px;">
     `;
 
     const timerText = document.createElement('div');

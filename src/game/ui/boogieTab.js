@@ -6,6 +6,11 @@ import { registerUpdateCallback, unregisterUpdateCallback } from '../ui.js';
 let _updateCallback = null;
 let activeRenderCleanup = null; // local reference to cleanup for re-renders
 
+//button img source helper
+function asset(path) {
+  return new URL(`../assets/img/boogie/${path}`, import.meta.url).href;
+}
+
 export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   // Ensure defeatedEnemies is a Set (defensive: savefiles might serialize it differently)
   if (state.boogie) {
@@ -54,10 +59,11 @@ export function renderBoogieTab({ tabContent, mainScreen, infoLeft, infoRight })
     btn.className = 'kiosk-button';
 
     btn.innerHTML = `
-      <img src="${KorvkioskData.pluginUrl}src/game/assets/img/boogie/${enemy.img}" 
-           alt="${enemy.name}" 
-           style="width:64px; height:64px;">
+    <img src="${asset(enemy.img)}"
+       alt="${enemy.name}"
+       style="width:64px; height:64px;">
     `;
+
 
     btn.addEventListener('mouseenter', () => {
       if (infoLeft) {
