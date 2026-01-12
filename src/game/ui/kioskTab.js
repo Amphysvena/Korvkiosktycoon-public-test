@@ -26,7 +26,7 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
   wrapper.style.height = '400px';
 
   const baseImg = document.createElement('img');
-  baseImg.src = `${KorvkioskData.pluginUrl}src/game/assets/img/kiosk/korvkioskmainscreen-inprogress.gif`;
+  baseImg.src = new URL('../assets/img/kiosk/korvkioskmainscreen-inprogress.gif', import.meta.url).href;
   baseImg.style.display = 'block';
   baseImg.style.width = '740px';
   baseImg.style.height = '400px';
@@ -35,10 +35,10 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
   // ── Optional overlays ──
   const imagesToShow = [];
   if (state.research.autoFry && state.research.autoFry.unlocked && !state.autoFryActive) {
-    imagesToShow.push(`${KorvkioskData.pluginUrl}src/game/assets/img/kiosk/autofry.png`);
+    imagesToShow.push(new URL('../assets/img/kiosk/autofry.png', import.meta.url).href);
   }
   if (state.autoFryActive) {
-    imagesToShow.push(`${KorvkioskData.pluginUrl}src/game/assets/img/kiosk/autofryactive.gif`);
+    imagesToShow.push(  new URL('../assets/img/kiosk/autofryactive.gif', import.meta.url).href);
   }
 
   imagesToShow.forEach(src => {
@@ -76,13 +76,18 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
       (key === 'korv2' && state.recipes.recipe1?.completed) ||
       (key === 'korv3' && state.recipes.recipe2?.completed)
     ) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'kiosk-button';
-      btn.innerHTML = `
-        <img src="${KorvkioskData.pluginUrl}${item.img}" 
-             alt="${item.name}" style="width:64px; height:64px;">
-      `;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'kiosk-button';
+
+        const imgUrl = new URL(`../${item.img}`, import.meta.url).href;
+
+        btn.innerHTML = `
+          <img src="${imgUrl}" 
+              alt="${item.name}" 
+              style="width:64px; height:64px;">
+`;
+
 
       if (key === 'korv1') btn.addEventListener('click', handlekoktKorvClick);
       if (key === 'korv2') btn.addEventListener('click', handleKorv2Click);

@@ -34,18 +34,19 @@ setInterval(() => {
 }, 1000 / 30); //30 herz
 
 const tabs = [
-  { id: 'kiosk', name: 'Kiosk', render: renderKioskTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/kiosk/kiosk frame 0.png`},
-  { id: 'research', name: 'Research', render: renderResearchTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/research/beaker-frame-0.png`},
-  { id: 'equipment', name: 'Equipment', render: renderEquipmentTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/equipment/equipment frame 0.png`},
-  { id: 'boogie', name: 'Boogie', render: renderBoogieTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/boogie/duelframe0.png` },
-  { id: 'skills', name: 'Skills', render: renderSkillsTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/skills/skill 1 - throw.png` },
-  { id: 'recipes', name: 'Recipes', render: renderRecipesTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/recept/recipe-frame-0-.png` },
-  { id: 'buildings', name: 'Buildings', render: renderBuildingsTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/building/building upgrade frame 0.png` },
-  { id: 'factory', name: 'Factory', render: renderFactoryTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/fabrik/fabrik frame 0.png` },
-  { id: 'artifacts', name: 'Artifacts', render: renderArtifactsTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/artifacts/artifacts frame 0.png` },
-  { id: 'spacecenter', name: 'Spacecenter', render: renderSpacecenterTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/spacecenter/spacecenter frame 0.png` },
-  { id: 'settings', name: 'Settings', render: renderSettingsTab, unlocked: true, icon: `${KorvkioskData.pluginUrl}src/game/assets/img/inställningar/settings frame 0.png` }
+  { id: 'kiosk', name: 'Kiosk', render: renderKioskTab, unlocked: true, icon: new URL('./assets/img/kiosk/kiosk frame 0.png', import.meta.url).href },
+  { id: 'research', name: 'Research', render: renderResearchTab, unlocked: true, icon: new URL('./assets/img/research/beaker-frame-0.png', import.meta.url).href },
+  { id: 'equipment', name: 'Equipment', render: renderEquipmentTab, unlocked: true,icon: new URL('./assets/img/equipment/equipment frame 0.png', import.meta.url).href },
+  { id: 'boogie', name: 'Boogie', render: renderBoogieTab, unlocked: true, icon: new URL('./assets/img/boogie/duelframe0.png', import.meta.url).href },
+  { id: 'skills', name: 'Skills', render: renderSkillsTab, unlocked: true, icon: new URL('./assets/img/skills/skill 1 - throw.png', import.meta.url).href },
+  { id: 'recipes', name: 'Recipes', render: renderRecipesTab, unlocked: true, icon: new URL('./assets/img/recept/recipe-frame-0-.png', import.meta.url).href },
+  { id: 'buildings', name: 'Buildings', render: renderBuildingsTab, unlocked: true, icon: new URL('./assets/img/building/building upgrade frame 0.png', import.meta.url).href },
+  { id: 'factory', name: 'Factory', render: renderFactoryTab, unlocked: true, icon: new URL('./assets/img/fabrik/fabrik frame 0.png', import.meta.url).href },
+  { id: 'artifacts', name: 'Artifacts', render: renderArtifactsTab, unlocked: true, icon: new URL('./assets/img/artifacts/artifacts frame 0.png', import.meta.url).href },
+  { id: 'spacecenter', name: 'Spacecenter', render: renderSpacecenterTab, unlocked: true, icon: new URL('./assets/img/spacecenter/spacecenter frame 0.png', import.meta.url).href },
+  { id: 'settings', name: 'Settings', render: renderSettingsTab, unlocked: true, icon: new URL('./assets/img/inställningar/settings frame 0.png', import.meta.url).href }
 ];
+
 
 // Store references for global use
 let activeTabId = null;

@@ -9,6 +9,11 @@ let activeCategory = null;
 // We'll keep a reference to the update function so we can unregister it
 let _updateCallback = null;
 
+//button img source helper
+function asset(path) {
+  return new URL(`../${path}`, import.meta.url).href;
+}
+
 export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, infoRight) {
   const equipmentState = state.equipment[key];
   const equipmentDef = equipmentData[key];
@@ -27,7 +32,7 @@ export function createEquipmentButton(key, tabContent, mainScreen, infoLeft, inf
   button.className = 'kiosk-button';
 
   const buttonImg = document.createElement('img');
-  buttonImg.src = `${KorvkioskData.pluginUrl}${equipmentDef.img}`;  //fix this
+  buttonImg.src = asset(equipmentDef.img);
   buttonImg.style.width = '64px';
   buttonImg.style.height = '64px';
   buttonImg.style.display = 'block';
@@ -91,10 +96,10 @@ function updateBoogieStats() {
     if (!slotDiv) return;
 
     if (equipmentState.equipped) {
-      slotDiv.src = `${KorvkioskData.pluginUrl}${equipmentDef.img}`;
+      slotDiv.src = asset(equipmentDef.img);
       slotDiv.style.opacity = '1';
     } else {
-      slotDiv.src = `${KorvkioskData.pluginUrl}src/game/assets/img/boogie/duelframe0.png`;
+      slotDiv.src = asset('assets/img/boogie/duelframe0.png');
       slotDiv.style.opacity = '0.5';
     }
   }
@@ -129,7 +134,7 @@ function updateBoogieStats() {
         // reset the visual on the corresponding slot
         const otherSlotImg = document.querySelector(`#slot-${equipmentData[k].slot} img`);
         if (otherSlotImg) {
-          otherSlotImg.src = `${KorvkioskData.pluginUrl}src/game/assets/img/boogie/duelframe0.png`;
+          otherSlotImg.src = asset('assets/img/boogie/duelframe0.png');
           otherSlotImg.style.opacity = '0.5';
         }
 
@@ -240,10 +245,10 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
     );
 
     if (equippedItem) {
-      img.src = `${KorvkioskData.pluginUrl}${equipmentData[equippedItem].img}`;
+      img.src = asset(equipmentData[equippedItem].img);
       img.style.opacity = '1';
     } else {
-      img.src = `${KorvkioskData.pluginUrl}src/game/assets/img/boogie/duelframe0.png`;
+      img.src = asset('assets/img/boogie/duelframe0.png');
       img.style.opacity = '0.5';
     }
 
@@ -262,10 +267,10 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
       );
 
       if (equippedItemKey) {
-        slotImg.src = `${KorvkioskData.pluginUrl}${equipmentData[equippedItemKey].img}`;
+        slotImg.src = asset(equipmentData[equippedItemKey].img);
         slotImg.style.opacity = '1';
       } else {
-        slotImg.src = `${KorvkioskData.pluginUrl}src/game/assets/img/boogie/duelframe0.png`;
+        slotImg.src = asset('assets/img/boogie/duelframe0.png');
         slotImg.style.opacity = '0.5';
       }
     }
@@ -335,10 +340,10 @@ export function renderEquipmentTab({ tabContent, mainScreen, infoLeft, infoRight
         key => state.equipment[key]?.equipped && equipmentData[key]?.slot === def.slot
       );
       if (equippedItem) {
-        slotImg.src = `${KorvkioskData.pluginUrl}${equipmentData[equippedItem].img}`;
+        slotImg.src = asset(equipmentData[equippedItem].img);
         slotImg.style.opacity = '1';
       } else {
-        slotImg.src = `${KorvkioskData.pluginUrl}src/game/assets/img/boogie/duelframe0.png`;
+        slotImg.src = asset('assets/img/boogie/duelframe0.png');
         slotImg.style.opacity = '0.5';
       }
     }

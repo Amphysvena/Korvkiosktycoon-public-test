@@ -8,12 +8,17 @@ const researchButtonsMap = new Map();
 
 export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight }) {
   // ── Setup main background image ──
-  mainScreen.innerHTML = `
-    <div style="display:flex; justify-content:center; align-items:center; height:100%;">
-      <img src="${KorvkioskData.pluginUrl}src/game/assets/img/research/researchmainscreen.gif"
-           style="max-height:auto; max-width:auto;">
-    </div>
-  `;
+  const researchBgUrl = new URL(
+  '../assets/img/research/researchmainscreen.gif',
+  import.meta.url
+).href;
+
+mainScreen.innerHTML = `
+  <div style="display:flex; justify-content:center; align-items:center; height:100%;">
+    <img src="${researchBgUrl}" style="max-height:auto; max-width:auto;">
+  </div>
+`;
+
 
   tabContent.innerHTML = '';
   if (infoLeft) infoLeft.innerHTML = '';
@@ -61,11 +66,16 @@ export function renderResearchTab({ tabContent, mainScreen, infoLeft, infoRight 
     button.type = 'button';
     button.className = 'kiosk-button';
 
-    button.innerHTML = `
-      <img src="${KorvkioskData.pluginUrl}src/game/assets/img/research/${researchDef.img}" 
-           alt="${researchDef.name}" 
-           style="width:64px; height:64px;">
-    `;
+    const imgUrl = new URL(
+  `../assets/img/research/${researchDef.img}`,
+  import.meta.url).href;
+
+button.innerHTML = `
+  <img src="${imgUrl}" 
+       alt="${researchDef.name}" 
+       style="width:64px; height:64px;">
+`;
+
 
     const timerText = document.createElement('div');
     timerText.style.position = 'absolute';
