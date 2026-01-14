@@ -1,7 +1,7 @@
 export const buildingData = {
     lagerhus: {
         name: 'Lagerhus',
-        img: 'src/game/assets/img/building/building 1 - lagerhus.png',
+        img: 'assets/img/building/building 1 - lagerhus.png',
         effectDescription: 'Storage house for your cold dogs.',
         itemDescription: 'Storage house for your cold dogs',
         baseCost: 1000,
