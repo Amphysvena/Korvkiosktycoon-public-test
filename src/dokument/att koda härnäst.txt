@@ -1,9 +1,4 @@
-- Verifiera att gameloop och ui update funkar som det ska. 
-
-
 - refactor state.js så att allt importeras som research gör
-
-- korv3 ska få regenkod //
 
 - refactor all ui-kod i uifilerna, all spelkod i Enginefilerna. 
 
