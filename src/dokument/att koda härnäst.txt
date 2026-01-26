@@ -1,14 +1,7 @@
-- Ta bort allt som har med wordpress att göra, pluginurl och kioskdata
-
 - Verifiera att gameloop och ui update funkar som det ska. 
 
-- recipe 2 craftad ska unlock condiments machine //
-	- condiments machine logic //
-	- condiments machine grafik i kiosk main screen // rudimentär
-	- kod för att condiments machine ska visas i main screen
 
 - refactor state.js så att allt importeras som research gör
-
 
 - korv3 ska få regenkod //
 

@@ -33,14 +33,25 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
   wrapper.appendChild(baseImg);
 
   // ── Optional overlays ──
-  const imagesToShow = [];
+  //auto fry
+   const imagesToShow = [];
   if (state.research.autoFry && state.research.autoFry.unlocked && !state.autoFryActive) {
     imagesToShow.push(new URL('../assets/img/kiosk/autofry.png', import.meta.url).href);
   }
   if (state.autoFryActive) {
-    imagesToShow.push(  new URL('../assets/img/kiosk/autofryactive.gif', import.meta.url).href);
+    imagesToShow.push(new URL('../assets/img/kiosk/autofryactive.gif', import.meta.url).href);
   }
 
+  // Condiments machine
+if (state.research.condimentsMachine && state.research.condimentsMachine.unlocked) {
+    imagesToShow.push(
+    new URL('../assets/img/kiosk/condimentsmachine.png', import.meta.url).href
+  );
+}
+
+if (state.condimentsMachineActive) {
+  imagesToShow.push(new URL('../assets/img/kiosk/condimentsmachineactive.gif', import.meta.url).href); //change to new image when you have created one
+}
   imagesToShow.forEach(src => {
     const img = document.createElement('img');
     img.src = src;
@@ -50,6 +61,7 @@ export function renderKioskTab({ tabContent, mainScreen, infoLeft, infoRight }) 
     img.style.width = '740px';
     img.style.height = '400px';
     img.style.pointerEvents = 'none';
+    
     wrapper.appendChild(img);
   });
 
