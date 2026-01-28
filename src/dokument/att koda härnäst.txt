@@ -1,4 +1,12 @@
-- refactor state.js så att allt importeras som research gör
+- Förbered för nästa steg act 1:Rudimentär 2d shooter, 
+                                Skapa en scrollbar skärm,   
+                                Spelaren rör sig separat från skärmens rörelse, men skärmen bör flytta på sig vid behov
+                                enkel första bana
+                                grafik till första banan
+                                data för fiender i banan
+                                mekanik för att anfalla (throw just nu)
+                                ammo och ammo regen
+                                   
 
 - refactor all ui-kod i uifilerna, all spelkod i Enginefilerna. 
 
