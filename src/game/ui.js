@@ -25,18 +25,14 @@ export function unregisterUpdateCallback(fn) {
 // One global interval running every second - make sure every tab and future tab uses this to update
 setInterval(() => {
   updateCallbacks.forEach(fn => {
-    try {
-      fn();
-    } catch (e) {
-      console.error("Error in update callback:", e);
-    }
+    try { fn(); } catch (e) { console.error("Error in update callback:", e); }
   });
 }, 1000 / 30); //30 herz
 
 const tabs = [
   { id: 'kiosk', name: 'Kiosk', render: renderKioskTab, unlocked: true, icon: new URL('./assets/img/kiosk/kiosk frame 0.png', import.meta.url).href },
   { id: 'research', name: 'Research', render: renderResearchTab, unlocked: true, icon: new URL('./assets/img/research/beaker-frame-0.png', import.meta.url).href },
-  { id: 'equipment', name: 'Equipment', render: renderEquipmentTab, unlocked: true,icon: new URL('./assets/img/equipment/equipment frame 0.png', import.meta.url).href },
+  { id: 'equipment', name: 'Equipment', render: renderEquipmentTab, unlocked: true, icon: new URL('./assets/img/equipment/equipment frame 0.png', import.meta.url).href },
   { id: 'boogie', name: 'Boogie', render: renderBoogieTab, unlocked: true, icon: new URL('./assets/img/boogie/duelframe0.png', import.meta.url).href },
   { id: 'skills', name: 'Skills', render: renderSkillsTab, unlocked: true, icon: new URL('./assets/img/skills/skill 1 - throw.png', import.meta.url).href },
   { id: 'recipes', name: 'Recipes', render: renderRecipesTab, unlocked: true, icon: new URL('./assets/img/recept/recipe-frame-0-.png', import.meta.url).href },
@@ -46,7 +42,6 @@ const tabs = [
   { id: 'spacecenter', name: 'Spacecenter', render: renderSpacecenterTab, unlocked: true, icon: new URL('./assets/img/spacecenter/spacecenter frame 0.png', import.meta.url).href },
   { id: 'settings', name: 'Settings', render: renderSettingsTab, unlocked: true, icon: new URL('./assets/img/inställningar/settings frame 0.png', import.meta.url).href }
 ];
-
 
 // Store references for global use
 let activeTabId = null;
@@ -59,7 +54,7 @@ let currentTabCleanup = null;
 export function initUI() {
   // Center the game container
   document.body.style.display = 'flex';
-  document.body.style.justifyContent = 'center';
+  document.body.style.flexDirection = 'column'; // stack UI and version below
   document.body.style.alignItems = 'center';
   document.body.style.height = '100vh';
   document.body.style.margin = '0';
@@ -75,6 +70,7 @@ export function initUI() {
   container.style.flexDirection = 'column';
   container.style.background = '#f0f0f0';
   container.style.position = 'relative';
+  container.style.marginTop = '20px';
 
   // Korv counter — floating text
   korvCounterEl = document.createElement('div');
@@ -136,13 +132,12 @@ export function initUI() {
   infoRight.style.width = '230px';
   infoRight.style.height = '100%';
   infoRight.style.background = '#e5e5e5';
-  infoRight.style.color = '#c41313ff';
+  infoRight.style.color = 'black';
   infoRight.style.padding = '10px';
   infoRight.style.boxSizing = 'border-box';
   infoRight.style.overflowY = 'auto';
   infoRight.style.fontFamily = 'Arial, sans-serif';
   infoRight.style.fontSize = '20px';
-  infoRight.style.color = 'black';
   infoRight.style.fontWeight = 'bold';
 
   infoRight.style.display = 'flex';
@@ -239,6 +234,25 @@ export function initUI() {
   // Start with first tab
   switchTab(tabs[0].id);
 }
+
+//version for checking that the right version is uploaded, change manually 
+const versionContainer = document.createElement('div');
+versionContainer.id = 'version-container';
+versionContainer.textContent = "Version: v0.0.2-pre-shooter";
+versionContainer.style.fontFamily = 'monospace, sans-serif';
+versionContainer.style.fontSize = '14px';
+versionContainer.style.color = '#555';
+versionContainer.style.textAlign = 'center';
+versionContainer.style.userSelect = 'none';
+
+// Position below main UI, fixed relative to viewport
+versionContainer.style.position = 'fixed';
+versionContainer.style.top = '650px'; // adjust if your container height changes
+versionContainer.style.left = '50%';
+versionContainer.style.transform = 'translateX(-50%)';
+versionContainer.style.zIndex = '1000'; // make sure it’s on top
+
+document.body.appendChild(versionContainer);
 
 function updateTabs() {
   tabs.forEach(tab => {});
